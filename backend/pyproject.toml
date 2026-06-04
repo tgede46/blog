@@ -1,0 +1,25 @@
+[project]
+name = "blog-backend"
+version = "0.1.0"
+description = "FastAPI backend for the blog platform"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.111.0",
+    "uvicorn[standard]",
+    "sqlalchemy[asyncio]>=2.0",
+    "asyncpg",
+    "alembic",
+    "pydantic[email]>=2.0",
+    "pydantic-settings",
+    "python-jose[cryptography]",
+    "passlib[bcrypt]",
+    "bcrypt==4.0.1",
+    "python-multipart",
+    "boto3",
+    "fastapi-mail",
+    "python-slugify",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

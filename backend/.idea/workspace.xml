@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="6db7eb5b-68d2-483f-81e5-593fd3774686" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../frontend/my-app" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/my-app" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CopilotChats">
+    <option name="panelChat">
+      <chat>
+        <option name="activeSessionId" value="8b445ba3-0615-428c-903d-a8a24b64cf10" />
+        <option name="sessions">
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="d421a365-454e-47b8-8e01-0b6d859ac651" />
+            <option name="modeId" value="Ask" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="auto" />
+            <option name="targetType" value="LOCAL" />
+          </session>
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="8b445ba3-0615-428c-903d-a8a24b64cf10" />
+            <option name="modeId" value="Agent" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="auto" />
+            <option name="targetType" value="LOCAL" />
+          </session>
+        </option>
+        <option name="type" value="PANEL" />
+      </chat>
+    </option>
+  </component>
+  <component name="CopilotPersistence">
+    <persistenceIdMap>
+      <entry key="_/home/gedeonkp/Tool/ToolProject/blog/backend" value="3Ee2SM5GcJRTaXVETHc0CHtwvdG" />
+    </persistenceIdMap>
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="1" />
+    <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.143561374856554" />
+      <entry key="MS500" value="2.6786525826622483" />
+      <entry key="S2" value="4.177463764332486" />
+      <entry key="S5" value="4.646248750462188" />
+      <entry key="S10" value="4.962140358703001" />
+      <entry key="S30" value="8.977027835636655" />
+      <entry key="S60" value="16.88259552146673" />
+      <entry key="M2" value="28.89330946665254" />
+      <entry key="M5" value="45.412234297815345" />
+      <entry key="M10" value="54.32089400541384" />
+      <entry key="M15" value="57.86204484486077" />
+      <entry key="M30" value="61.742732253660705" />
+      <entry key="H1" value="63.9920862796975" />
+      <entry key="H2" value="69.2073326999428" />
+      <entry key="H4" value="87.11617425692619" />
+      <entry key="D1" value="149.17802902541277" />
+      <entry key="W1" value="170.87370010769766" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="2.6416423195898107E-286" />
+      <entry key="MS500" value="7.662576135220817E-58" />
+      <entry key="S2" value="5.261352645940859E-15" />
+      <entry key="S5" value="1.9610860199298596E-6" />
+      <entry key="S10" value="0.0015289291455405595" />
+      <entry key="S30" value="0.16301328117988254" />
+      <entry key="S60" value="0.5607362379537608" />
+      <entry key="M2" value="1.0540542809686253" />
+      <entry key="M5" value="1.5462207537415047" />
+      <entry key="M10" value="1.758201447999146" />
+      <entry key="M15" value="1.835287758065404" />
+      <entry key="M30" value="1.9158343443091046" />
+      <entry key="H1" value="1.9574545776122512" />
+      <entry key="H2" value="1.9786103381173645" />
+      <entry key="H4" value="1.9892757669957277" />
+      <entry key="D1" value="1.9982085301831995" />
+      <entry key="W1" value="1.9997439752063955" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="1.017280825499865" />
+      <entry key="MS500" value="2.6184462965271456" />
+      <entry key="S2" value="4.154006932799851" />
+      <entry key="S5" value="4.635801262078218" />
+      <entry key="S10" value="4.957599527795131" />
+      <entry key="S30" value="9.131005677423056" />
+      <entry key="S60" value="17.431704992172264" />
+      <entry key="M2" value="29.93711167633168" />
+      <entry key="M5" value="46.95245703937379" />
+      <entry key="M10" value="56.07566062577256" />
+      <entry key="M15" value="59.694933941634275" />
+      <entry key="M30" value="63.657309491074656" />
+      <entry key="H1" value="65.9488945369485" />
+      <entry key="H2" value="71.18558427172103" />
+      <entry key="H4" value="89.10520365249495" />
+      <entry key="D1" value="151.1761575736766" />
+      <entry key="W1" value="172.87343071518904" />
+    </decayedShown>
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 1,
+  "fromUser": false
+}]]></component>
+  <component name="ProjectId" id="3Ee2SM5GcJRTaXVETHc0CHtwvdG" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "FastAPI.Unnamed.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "main",
+    "junie.onboarding.icon.badge.shown": "true",
+    "last_opened_file_path": "/home/gedeonkp/Tool/ToolProject/blog/backend",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration name="Unnamed" type="Python.FastAPI" nameIsGenerated="true">
+      <module name="backend" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="$PROJECT_DIR$/.venv/bin/python" />
+      <option name="SDK_NAME" value="Python 3.14 (backend) (2)" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="DEBUG_JUST_MY_CODE" value="false" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="RUN_TOOL" value="" />
+      <option name="launchJavascriptDebuger" value="false" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-PY-261.24374.152" />
+        <option value="bundled-python-sdk-c59985aa861c-c2ffad84badb-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-261.24374.152" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6db7eb5b-68d2-483f-81e5-593fd3774686" name="Changes" comment="" />
+      <created>1780524716683</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1780524716683</updated>
+      <workItem from="1780524721231" duration="4263000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
+  </component>
+</project>
