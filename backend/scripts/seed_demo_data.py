@@ -11,7 +11,7 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from sqlalchemy import select
 
-from app.database import SessionLocal
+from app.database import SessionLocal, utc_now
 from app.models.article import Article, ArticleStatus
 from app.models.user import User
 from slugify import slugify
@@ -111,6 +111,7 @@ async def seed() -> None:
                 author_id=admin.id,
                 status=data["status"],
                 read_minutes=data["read_minutes"],
+                published_at=utc_now() if data["status"] == ArticleStatus.published else None,
             )
             db.add(article)
             count += 1

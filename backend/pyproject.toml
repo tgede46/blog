@@ -20,6 +20,12 @@ dependencies = [
     "python-slugify",
 ]
 
+[project.optional-dependencies]
+test = [
+    "httpx",
+    "pytest",
+]
+
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]

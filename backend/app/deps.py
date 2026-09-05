@@ -1,6 +1,7 @@
 from collections.abc import AsyncIterator
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
+from app.config import settings
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,7 +10,7 @@ from app.models.user import User, UserRole
 from app.services.auth import decode_access_token
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login", auto_error=False)
 
 
 async def get_db() -> AsyncIterator[AsyncSession]:
@@ -18,9 +19,22 @@ async def get_db() -> AsyncIterator[AsyncSession]:
 
 
 async def get_current_user(
-    token: str = Depends(oauth2_scheme),
+    request: Request,
+    bearer_token: str | None = Depends(oauth2_scheme),
     db: AsyncSession = Depends(get_db),
 ) -> User:
+    cookie_token = request.cookies.get(settings.auth_cookie_name)
+    token = bearer_token or cookie_token
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    if cookie_token and not bearer_token and request.method not in {"GET", "HEAD", "OPTIONS"}:
+        origin = request.headers.get("origin")
+        if not origin or origin.rstrip("/") not in settings.cors_origins:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid request origin")
     user_id = decode_access_token(token)
     if user_id is None:
         raise HTTPException(
@@ -42,5 +56,11 @@ async def get_current_user(
 async def require_admin(user: User = Depends(get_current_user)) -> User:
     if user.role != UserRole.admin:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin only")
+    return user
+
+
+async def require_editor(user: User = Depends(get_current_user)) -> User:
+    if user.role not in {UserRole.admin, UserRole.editor}:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Editor access required")
     return user
 

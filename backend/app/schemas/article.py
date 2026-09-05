@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Literal
+from typing import Annotated, Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, computed_field
@@ -7,18 +7,47 @@ from pydantic import BaseModel, ConfigDict, Field, computed_field
 from app.models.article import ArticleStatus
 
 
-class ContentBlock(BaseModel):
-    type: Literal["paragraph", "heading", "code", "callout", "image"]
-    text: str | None = None
-    code: str | None = None
+class StrictBlock(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+
+class ParagraphBlock(StrictBlock):
+    type: Literal["paragraph"]
+    text: str = Field(min_length=1)
+
+
+class HeadingBlock(StrictBlock):
+    type: Literal["heading"]
+    text: str = Field(min_length=1)
+
+
+class CalloutBlock(StrictBlock):
+    type: Literal["callout"]
+    text: str = Field(min_length=1)
+
+
+class CodeBlock(StrictBlock):
+    type: Literal["code"]
+    code: str = Field(min_length=1)
     filename: str | None = None
+
+
+class ImageBlock(StrictBlock):
+    type: Literal["image"]
+    text: str = Field(min_length=1)
     caption: str | None = None
+
+
+ContentBlock = Annotated[
+    ParagraphBlock | HeadingBlock | CalloutBlock | CodeBlock | ImageBlock,
+    Field(discriminator="type"),
+]
 
 
 class ArticleCreate(BaseModel):
     title: str = Field(min_length=1, max_length=255)
     excerpt: str = Field(min_length=1)
-    content: list[ContentBlock]
+    content: list[ContentBlock] = Field(min_length=1)
     category: str = Field(min_length=1, max_length=120)
     tag: str = Field(min_length=1, max_length=80)
     status: ArticleStatus = ArticleStatus.draft
@@ -28,7 +57,7 @@ class ArticleCreate(BaseModel):
 class ArticleUpdate(BaseModel):
     title: str | None = Field(default=None, min_length=1, max_length=255)
     excerpt: str | None = Field(default=None, min_length=1)
-    content: list[ContentBlock] | None = None
+    content: list[ContentBlock] | None = Field(default=None, min_length=1)
     category: str | None = Field(default=None, min_length=1, max_length=120)
     tag: str | None = Field(default=None, min_length=1, max_length=80)
     status: ArticleStatus | None = None
@@ -43,6 +72,7 @@ class ArticleSummary(BaseModel):
     read_minutes: int = Field(exclude=True)
     published_at: datetime | None = Field(default=None, exclude=True)
     created_at: datetime = Field(exclude=True)
+    views: int = 0
 
     model_config = ConfigDict(from_attributes=True)
 

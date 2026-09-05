@@ -14,7 +14,7 @@ export default async function PublicPage({ children }: { children: ReactNode }) 
   return (
     <div className="min-h-screen bg-[#fbfaf7] text-[#1d2433]">
       <Nav />
-      <main className="mx-auto max-w-4xl px-5 py-16">{children}</main>
+      <main id="contenu" className="mx-auto max-w-4xl px-5 py-16">{children}</main>
       <SiteFooter settings={settings} />
     </div>
   )

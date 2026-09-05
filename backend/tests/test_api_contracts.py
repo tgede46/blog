@@ -105,6 +105,7 @@ def test_required_routes_are_exposed() -> None:
         "/api/contact",
         "/api/settings",
         "/api/admin/posts",
+        "/api/admin/posts/{post_id}",
         "/api/admin/media",
         "/api/admin/settings",
         "/api/admin/stats",

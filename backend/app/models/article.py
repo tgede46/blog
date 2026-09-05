@@ -31,6 +31,7 @@ class Article(UUIDPrimaryKeyMixin, UpdatedTimestampMixin, Base):
         nullable=False,
     )
     read_minutes: Mapped[int] = mapped_column(Integer, default=5, nullable=False)
+    views: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     published_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     author = relationship("User", back_populates="articles")

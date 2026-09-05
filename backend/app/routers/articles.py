@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.deps import get_db
@@ -29,6 +29,9 @@ async def get_article(slug: str, db: AsyncSession = Depends(get_db)) -> Article:
     article = result.scalar_one_or_none()
     if article is None:
         raise HTTPException(status_code=404, detail="Article not found")
+    await db.execute(update(Article).where(Article.id == article.id).values(views=Article.views + 1))
+    await db.commit()
+    await db.refresh(article)
     return article
 
 

@@ -1,178 +1,87 @@
-import { ArticleDetail, ArticleSummary } from "./articles"
+import type { ArticleDetail, ArticleSummary } from "./articles"
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+export const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/$/, "")
 
-export type UserProfile = {
-  id: string
-  email: string
-  name: string
-  avatar_url?: string | null
-  role: "admin" | "editor"
-  created_at: string
+export type UserProfile = { id: string; email: string; name: string; avatar_url?: string | null; role?: string; created_at?: string }
+export type PublicSettings = {
+  site_name?: string; site_description?: string; author_name?: string; author_bio?: string; email?: string
+  github_url?: string; linkedin_url?: string; twitter_url?: string; legal_name?: string; address?: string
+  [key: string]: unknown
 }
-
-export type LoginResponse = {
-  access_token: string
-  token_type: string
-  user: UserProfile
-}
-
 export type ArticleListResponse = {
-  articles: ArticleSummary[]
-  total: number
-  page: number
-  pages: number
+  articles: ArticleSummary[]; total: number; page: number; pages: number
+  categories?: Array<string | { name: string; count?: number }>
 }
-
-export type AdminPost = ArticleDetail & {
-  id: string
-  status: "published" | "draft"
-  updated_at: string
+export type PostInput = {
+  title: string; excerpt: string; intro?: string; content: ArticleDetail["content"]; category: string; tag: string
+  status: "published" | "draft"; read_minutes?: number; slug?: string
 }
-
+export type AdminPost = ArticleDetail & { id: string; status: "published" | "draft"; updated_at?: string }
 export type AdminStats = {
-  total_views: number
-  total_posts: number
-  total_subscribers: number
-  monthly_reads_growth: string
-  posts_growth: string
-  subscribers_growth: string
-  views_history: Array<{ date: string; views: number }>
-  category_distribution: Record<string, number>
-  recent_activities: Array<{ id: string; action: string; title: string; time: string }>
+  total_views?: number; total_posts?: number; total_subscribers?: number; total_drafts?: number
+  monthly_reads_growth?: string; posts_growth?: string; subscribers_growth?: string
+  views_history?: Array<{ date: string; views: number }>; category_distribution?: Record<string, number>
+  recent_activities?: Array<{ id: string; action: string; title: string; time: string }>
 }
+export type MediaItem = { id: string; url: string; filename: string; created_at?: string; alt?: string }
 
-function getStoredToken(): string | null {
-  if (typeof window === "undefined") return null
-  return localStorage.getItem("blog_access_token")
+function queryString(params: Record<string, string | number | undefined>) {
+  const search = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== "") search.set(key, String(value))
+  })
+  return search.size ? `?${search}` : ""
 }
 
 export async function apiFetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const token = getStoredToken()
-  const headers = new Headers(options.headers || {})
-
-  if (!headers.has("Content-Type") && !(options.body instanceof FormData)) {
-    headers.set("Content-Type", "application/json")
-  }
-
-  if (token && !headers.has("Authorization")) {
-    headers.set("Authorization", `Bearer ${token}`)
-  }
-
-  const res = await fetch(`${API_BASE_URL}${endpoint}`, {
-    ...options,
-    headers,
-  })
-
-  if (!res.ok) {
-    let errorDetail = "Une erreur est survenue"
+  const headers = new Headers(options.headers)
+  if (options.body && !(options.body instanceof FormData) && !headers.has("Content-Type")) headers.set("Content-Type", "application/json")
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, { ...options, headers, credentials: "include" })
+  if (!response.ok) {
+    let message = `La requête a échoué (${response.status}).`
     try {
-      const errorJson = await res.json()
-      errorDetail = errorJson.detail || errorDetail
-    } catch {
-      // Ignored
-    }
-    throw new Error(errorDetail)
+      const body = await response.json()
+      message = body.detail || body.message || message
+    } catch {}
+    const error = new Error(message) as Error & { status?: number }
+    error.status = response.status
+    throw error
   }
-
-  return res.json()
+  if (response.status === 204) return undefined as T
+  return response.json() as Promise<T>
 }
 
-// Auth Endpoints
 export const api = {
   auth: {
-    login: async (email: string, password: string): Promise<LoginResponse> => {
-      return apiFetch<LoginResponse>("/api/auth/login", {
-        method: "POST",
-        body: JSON.stringify({ email, password }),
-      })
-    },
-    me: async (): Promise<UserProfile> => {
-      return apiFetch<UserProfile>("/api/auth/me")
-    },
-    logout: async () => {
-      try {
-        await apiFetch("/api/auth/logout", { method: "POST" })
-      } catch {
-        // Ignored
-      }
-    },
+    login: (email: string, password: string) => apiFetch<UserProfile | { user: UserProfile }>("/api/auth/login", { method: "POST", body: JSON.stringify({ email, password }) }),
+    me: () => apiFetch<UserProfile>("/api/auth/me"),
+    logout: () => apiFetch<void>("/api/auth/logout", { method: "POST" }),
   },
-
-  // Public Articles
   articles: {
-    list: async (params?: { page?: number; category?: string; tag?: string; search?: string }): Promise<ArticleListResponse> => {
-      const searchParams = new URLSearchParams()
-      if (params?.page) searchParams.set("page", params.page.toString())
-      if (params?.category) searchParams.set("category", params.category)
-      if (params?.tag) searchParams.set("tag", params.tag)
-      if (params?.search) searchParams.set("search", params.search)
-      const qs = searchParams.toString()
-      return apiFetch<ArticleListResponse>(`/api/articles${qs ? `?${qs}` : ""}`)
-    },
-    get: async (slug: string): Promise<ArticleDetail> => {
-      return apiFetch<ArticleDetail>(`/api/articles/${slug}`)
-    },
+    list: (params: { page?: number; limit?: number; category?: string; search?: string } = {}) => apiFetch<ArticleListResponse>(`/api/articles${queryString(params)}`),
+    get: (slug: string) => apiFetch<ArticleDetail>(`/api/articles/${encodeURIComponent(slug)}`),
+    related: (slug: string) => apiFetch<ArticleSummary[]>(`/api/articles/${encodeURIComponent(slug)}/related`),
   },
-
-  // Newsletter
-  newsletter: {
-    subscribe: async (email: string): Promise<{ message: string }> => {
-      return apiFetch<{ message: string }>("/api/newsletter", {
-        method: "POST",
-        body: JSON.stringify({ email }),
-      })
-    },
-  },
-
-  // Admin Endpoints
+  settings: { public: () => apiFetch<PublicSettings>("/api/settings") },
+  newsletter: { subscribe: (email: string) => apiFetch<{ message?: string }>("/api/newsletter/subscribe", { method: "POST", body: JSON.stringify({ email }) }) },
+  contact: { send: (data: { name: string; email: string; subject: string; message: string }) => apiFetch<{ message?: string }>("/api/contact", { method: "POST", body: JSON.stringify(data) }) },
   admin: {
+    stats: () => apiFetch<AdminStats>("/api/admin/stats"),
     posts: {
-      list: async (params?: { page?: number; status?: string; search?: string }): Promise<{ posts: AdminPost[]; total: number }> => {
-        const searchParams = new URLSearchParams()
-        if (params?.page) searchParams.set("page", params.page.toString())
-        if (params?.status) searchParams.set("status", params.status)
-        if (params?.search) searchParams.set("search", params.search)
-        const qs = searchParams.toString()
-        return apiFetch<{ posts: AdminPost[]; total: number }>(`/api/admin/posts${qs ? `?${qs}` : ""}`)
-      },
-      create: async (data: {
-        title: string
-        excerpt: string
-        content: ArticleDetail["content"]
-        category: string
-        tag: string
-        status?: "published" | "draft"
-        read_minutes?: number
-      }): Promise<AdminPost> => {
-        return apiFetch<AdminPost>("/api/admin/posts", {
-          method: "POST",
-          body: JSON.stringify(data),
-        })
-      },
-      delete: async (id: string): Promise<{ success: boolean }> => {
-        return apiFetch<{ success: boolean }>(`/api/admin/posts/${id}`, {
-          method: "DELETE",
-        })
-      },
-    },
-    stats: {
-      get: async (): Promise<AdminStats> => {
-        return apiFetch<AdminStats>("/api/admin/stats")
-      },
+      list: (params: { page?: number; limit?: number; status?: string; search?: string } = {}) => apiFetch<{ posts: AdminPost[]; total: number; page?: number; pages?: number }>(`/api/admin/posts${queryString(params)}`),
+      get: (id: string) => apiFetch<AdminPost>(`/api/admin/posts/${encodeURIComponent(id)}`),
+      create: (data: PostInput) => apiFetch<AdminPost>("/api/admin/posts", { method: "POST", body: JSON.stringify(data) }),
+      update: (id: string, data: PostInput) => apiFetch<AdminPost>(`/api/admin/posts/${encodeURIComponent(id)}`, { method: "PUT", body: JSON.stringify(data) }),
+      delete: (id: string) => apiFetch<void>(`/api/admin/posts/${encodeURIComponent(id)}`, { method: "DELETE" }),
     },
     media: {
-      list: async (): Promise<Array<{ id: string; url: string; filename: string; created_at: string }>> => {
-        return apiFetch<Array<{ id: string; url: string; filename: string; created_at: string }>>("/api/admin/media")
-      },
-      upload: async (file: File): Promise<{ url: string; filename: string }> => {
-        const formData = new FormData()
-        formData.append("file", file)
-        return apiFetch<{ url: string; filename: string }>("/api/admin/media", {
-          method: "POST",
-          body: formData,
-        })
-      },
+      list: () => apiFetch<MediaItem[]>("/api/admin/media"),
+      upload: (file: File) => { const body = new FormData(); body.append("file", file); return apiFetch<MediaItem>("/api/admin/media/upload", { method: "POST", body }) },
+      delete: (id: string) => apiFetch<void>(`/api/admin/media/${encodeURIComponent(id)}`, { method: "DELETE" }),
+    },
+    settings: {
+      get: () => apiFetch<PublicSettings>("/api/admin/settings"),
+      update: (settings: PublicSettings) => apiFetch<PublicSettings>("/api/admin/settings", { method: "PUT", body: JSON.stringify(settings) }),
     },
   },
 }

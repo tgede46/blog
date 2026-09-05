@@ -30,6 +30,9 @@ def test_production_cookie_is_cross_site_compatible() -> None:
 def test_neon_database_url_is_async_compatible() -> None:
     config = Settings(
         _env_file=None,
-        database_url="postgresql://user:pass@neon.example/db?sslmode=require",
+        database_url=(
+            "postgresql://user:pass@neon.example/db"
+            "?sslmode=require&channel_binding=require"
+        ),
     )
     assert config.database_url == "postgresql+asyncpg://user:pass@neon.example/db?ssl=require"
