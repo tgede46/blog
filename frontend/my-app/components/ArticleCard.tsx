@@ -6,11 +6,11 @@ type Props = { href: string; date: string; title: string; excerpt: string; tag?:
 
 export default function ArticleCard({ href, date, title, excerpt, tag, minutes }: Props) {
   return (
-    <Link href={href} className="group flex h-full flex-col rounded-3xl border border-black/10 bg-white p-7 transition-all hover:-translate-y-1 hover:shadow-xl">
-      <div className="mb-7 flex justify-between text-xs font-bold uppercase tracking-wider text-[#737b8d]"><span>{formatDateFr(date)}</span><ArrowUpRight size={20} /></div>
+    <Link href={href} className="group flex h-full flex-col border-2 border-on-surface bg-white p-7 hard-shadow transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[8px_8px_0_0_#212121]">
+      <div className="mb-7 flex items-start justify-between gap-4 text-xs font-bold uppercase tracking-wider"><span className="border-2 border-on-surface bg-tertiary-fixed px-3 py-1 hard-shadow-sm">{formatDateFr(date)}</span><ArrowUpRight size={22} className="transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" /></div>
       <h3 className="mb-4 font-heading text-2xl font-bold leading-tight group-hover:text-violet-700">{title}</h3>
-      <p className="mb-8 line-clamp-3 leading-7 text-[#687184]">{excerpt}</p>
-      <div className="mt-auto flex items-center justify-between border-t border-black/10 pt-5 text-xs font-bold uppercase tracking-wider text-[#858b98]"><span>{readingTime(minutes)}</span>{tag && <span className="rounded-full bg-[#dff3e5] px-3 py-1 text-[#315c40]">{tag}</span>}</div>
+      <p className="mb-8 line-clamp-3 leading-7 text-on-surface/70">{excerpt}</p>
+      <div className="mt-auto flex items-center justify-between border-t-2 border-on-surface/10 pt-5 text-xs font-bold uppercase tracking-wider text-on-surface/60"><span>{readingTime(minutes)}</span>{tag && <span className="border border-on-surface/30 bg-node-green px-3 py-1 text-on-surface">{tag}</span>}</div>
     </Link>
   )
 }

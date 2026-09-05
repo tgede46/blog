@@ -55,7 +55,7 @@ export default function ConnectDialog({ open, onClose }: ConnectDialogProps) {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-4 py-6 backdrop-blur-[1px]"
+      className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto bg-black/50 px-4 py-10 sm:items-center"
       role="presentation"
       onMouseDown={onClose}
     >
@@ -63,7 +63,7 @@ export default function ConnectDialog({ open, onClose }: ConnectDialogProps) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="connect-dialog-title"
-        className="relative w-full max-w-[840px] rounded-[24px] border-2 border-[#2c3550] bg-[#fbf8f1] px-6 py-6 text-[#23304a] shadow-[4px_4px_0px_0px_#2c3550] sm:px-8 sm:py-7"
+        className="relative max-h-[calc(100vh-5rem)] w-full max-w-2xl overflow-y-auto border-2 border-[#2c3550] bg-[#fbf8f1] px-6 py-6 text-[#23304a] shadow-[8px_8px_0px_0px_#2c3550] sm:px-8 sm:py-7"
         onMouseDown={(event) => event.stopPropagation()}
       >
         <button
@@ -97,7 +97,7 @@ export default function ConnectDialog({ open, onClose }: ConnectDialogProps) {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="h-12 w-full rounded-[12px] border-2 border-[#2c3550] bg-transparent px-4 text-[1rem] outline-none transition-colors focus:border-[#23304a]"
+              className="h-12 w-full border-2 border-[#2c3550] bg-transparent px-4 text-[1rem] outline-none transition-colors focus:bg-white"
               required
               disabled={isLoading}
               autoComplete="email"
@@ -111,7 +111,7 @@ export default function ConnectDialog({ open, onClose }: ConnectDialogProps) {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="h-12 w-full rounded-[12px] border-2 border-[#2c3550] bg-transparent px-4 text-[1rem] outline-none transition-colors focus:border-[#23304a]"
+              className="h-12 w-full border-2 border-[#2c3550] bg-transparent px-4 text-[1rem] outline-none transition-colors focus:bg-white"
               required
               disabled={isLoading}
               autoComplete="current-password"
@@ -122,7 +122,7 @@ export default function ConnectDialog({ open, onClose }: ConnectDialogProps) {
             id="login-submit"
             type="submit"
             disabled={isLoading}
-            className="flex h-14 w-full items-center justify-center gap-2 rounded-[12px] border-2 border-[#2c3550] bg-[#f4e1ad] text-[1.1rem] font-semibold text-[#23304a] shadow-[4px_4px_0px_0px_#2c3550] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none disabled:opacity-60 disabled:cursor-not-allowed"
+            className="flex h-14 w-full items-center justify-center gap-2 border-2 border-[#2c3550] bg-[#f4e1ad] text-[1.1rem] font-bold text-[#23304a] shadow-[4px_4px_0px_0px_#2c3550] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isLoading && <Loader2 size={18} className="animate-spin" />}
             Se connecter

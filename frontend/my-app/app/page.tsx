@@ -12,7 +12,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ l
   let settings: PublicSettings = {}
   try { settings = await api.settings.public() } catch {}
   return (
-    <div className="min-h-screen bg-[#fbfaf7] text-[#1d2433]">
+    <div className="graphic-grid min-h-screen bg-surface text-on-surface">
       <Nav loginRequired={query.login === "required"} />
       <main id="contenu" className="mx-auto max-w-6xl px-5">
         <Hero title={settings.hero_title} description={settings.hero_description || settings.site_description} />
