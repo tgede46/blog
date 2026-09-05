@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { api, type PublicSettings } from "@/lib/api"
+import SecuritySettings from "@/components/SecuritySettings"
 
 const fields: Array<{ key: keyof PublicSettings; label: string; type?: string }> = [
   { key: "site_name", label: "Nom du site" },
@@ -59,6 +60,7 @@ export default function AdminSettingsPage() {
         })}
         <div className="flex flex-wrap items-center gap-5 pt-2"><button disabled={loading} className="neo-button bg-primary px-6 py-3 font-bold text-white disabled:opacity-50">{loading ? "Enregistrement…" : "Enregistrer"}</button><p aria-live="polite" className="text-sm text-[#596275]">{message}</p></div>
       </form>
+      <SecuritySettings />
     </div>
   )
 }

@@ -23,6 +23,9 @@ def test_login_returns_bearer_and_sets_http_only_cookie(monkeypatch) -> None:
         name="Admin",
         avatar_url=None,
         role=UserRole.admin,
+        totp_enabled=False,
+        email_mfa_enabled=False,
+        recovery_code_hashes=None,
     )
 
     async def authenticate(*_args) -> object:
@@ -44,6 +47,39 @@ def test_login_returns_bearer_and_sets_http_only_cookie(monkeypatch) -> None:
     cookie = response.headers["set-cookie"].lower()
     assert "httponly" in cookie
     assert "samesite=lax" in cookie
+
+
+def test_login_requires_second_factor_when_enabled(monkeypatch) -> None:
+    user = SimpleNamespace(
+        id=uuid4(),
+        email="admin@example.com",
+        name="Admin",
+        avatar_url=None,
+        role=UserRole.admin,
+        totp_enabled=True,
+        email_mfa_enabled=True,
+        recovery_code_hashes='["hash"]',
+    )
+
+    async def authenticate(*_args) -> object:
+        return user
+
+    monkeypatch.setattr(auth_router, "authenticate_user", authenticate)
+    monkeypatch.setattr(auth_router, "create_mfa_challenge", lambda _user_id: "mfa-token")
+    app.dependency_overrides[get_db] = fake_db
+    try:
+        response = TestClient(app).post(
+            "/api/auth/login",
+            json={"email": "admin@example.com", "password": "secret"},
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    assert response.json()["mfa_required"] is True
+    assert response.json()["challenge_token"] == "mfa-token"
+    assert response.json()["methods"] == ["totp", "email", "recovery"]
+    assert "blog_access_token" not in response.cookies
 
 
 def test_public_settings_contract(monkeypatch) -> None:

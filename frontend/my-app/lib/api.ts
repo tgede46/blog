@@ -7,6 +7,15 @@ export const API_BASE_URL = (
 ).replace(/\/$/, "")
 
 export type UserProfile = { id: string; email: string; name: string; avatar_url?: string | null; role?: string; created_at?: string }
+export type MFAMethod = "totp" | "email" | "recovery"
+export type LoginResponse = {
+  access_token?: string | null
+  user?: UserProfile | null
+  mfa_required?: boolean
+  challenge_token?: string | null
+  methods?: MFAMethod[]
+}
+export type MFAStatus = { totp_enabled: boolean; email_enabled: boolean; email_available: boolean }
 export type PublicSettings = {
   site_name?: string; site_description?: string; author_name?: string; author_bio?: string
   hero_title?: string; hero_description?: string; about_content?: string; contact_email?: string
@@ -60,9 +69,17 @@ export async function apiFetch<T>(endpoint: string, options: RequestInit = {}): 
 
 export const api = {
   auth: {
-    login: (email: string, password: string) => apiFetch<UserProfile | { user: UserProfile }>("/api/auth/login", { method: "POST", body: JSON.stringify({ email, password }) }),
+    login: (email: string, password: string) => apiFetch<LoginResponse>("/api/auth/login", { method: "POST", body: JSON.stringify({ email, password }) }),
+    verifyMfa: (challengeToken: string, method: MFAMethod, code: string) => apiFetch<LoginResponse>("/api/auth/mfa/verify", { method: "POST", body: JSON.stringify({ challenge_token: challengeToken, method, code }) }),
+    sendEmailCode: (challengeToken: string) => apiFetch<{ message: string }>("/api/auth/mfa/email/send", { method: "POST", body: JSON.stringify({ challenge_token: challengeToken }) }),
     me: () => apiFetch<UserProfile>("/api/auth/me"),
     logout: () => apiFetch<void>("/api/auth/logout", { method: "POST" }),
+    mfaStatus: () => apiFetch<MFAStatus>("/api/auth/mfa/status"),
+    setupTotp: () => apiFetch<{ secret: string; provisioning_uri: string }>("/api/auth/mfa/totp/setup", { method: "POST" }),
+    confirmTotp: (code: string) => apiFetch<{ recovery_codes: string[] }>("/api/auth/mfa/totp/confirm", { method: "POST", body: JSON.stringify({ code }) }),
+    setupEmailMfa: () => apiFetch<{ message: string }>("/api/auth/mfa/email/setup", { method: "POST" }),
+    confirmEmailMfa: (code: string) => apiFetch<{ message: string }>("/api/auth/mfa/email/confirm", { method: "POST", body: JSON.stringify({ code }) }),
+    changePassword: (currentPassword: string, newPassword: string) => apiFetch<{ message: string }>("/api/auth/password", { method: "POST", body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }) }),
   },
   articles: {
     list: (params: { page?: number; limit?: number; category?: string; search?: string } = {}) => apiFetch<ArticleListResponse>(`/api/articles${queryString(params)}`),

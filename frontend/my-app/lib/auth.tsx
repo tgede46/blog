@@ -1,12 +1,13 @@
 "use client"
 
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react"
-import { api, type UserProfile } from "./api"
+import { api, type LoginResponse, type MFAMethod, type UserProfile } from "./api"
 
 type AuthContextType = {
   user: UserProfile | null
   isLoading: boolean
-  login: (email: string, password: string) => Promise<void>
+  login: (email: string, password: string) => Promise<LoginResponse>
+  verifyMfa: (challengeToken: string, method: MFAMethod, code: string) => Promise<void>
   logout: () => Promise<void>
   isAuthenticated: boolean
 }
@@ -25,15 +26,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(async (email: string, password: string) => {
     const response = await api.auth.login(email, password)
-    const profile = "user" in response ? response.user : response
-    setUser(profile?.email ? profile : await api.auth.me())
+    if (!response.mfa_required) {
+      setUser(response.user?.email ? response.user : await api.auth.me())
+    }
+    return response
+  }, [])
+
+  const verifyMfa = useCallback(async (challengeToken: string, method: MFAMethod, code: string) => {
+    const response = await api.auth.verifyMfa(challengeToken, method, code)
+    setUser(response.user?.email ? response.user : await api.auth.me())
   }, [])
 
   const logout = useCallback(async () => {
     try { await api.auth.logout() } finally { setUser(null) }
   }, [])
 
-  return <AuthContext.Provider value={{ user, isLoading, login, logout, isAuthenticated: Boolean(user) }}>{children}</AuthContext.Provider>
+  return <AuthContext.Provider value={{ user, isLoading, login, verifyMfa, logout, isAuthenticated: Boolean(user) }}>{children}</AuthContext.Provider>
 }
 
 export function useAuth() {

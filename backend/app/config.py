@@ -11,6 +11,9 @@ class Settings(BaseSettings):
     secret_key: str = "change-me-in-production"
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
+    mfa_challenge_expire_minutes: int = 5
+    email_otp_expire_minutes: int = 10
+    email_otp_resend_seconds: int = 60
 
     frontend_url: str = "http://localhost:3000"
     allowed_origins: str = ""
