@@ -9,9 +9,10 @@ export default function ContactForm() {
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    const formElement = event.currentTarget
     setLoading(true)
     setStatus("")
-    const form = new FormData(event.currentTarget)
+    const form = new FormData(formElement)
     try {
       const response = await api.contact.send({
         name: String(form.get("name") || ""),
@@ -20,7 +21,7 @@ export default function ContactForm() {
         message: String(form.get("message") || ""),
       })
       setStatus(response.message || "Votre message a bien été envoyé.")
-      event.currentTarget.reset()
+      formElement.reset()
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "L’envoi a échoué. Réessayez.")
     } finally {

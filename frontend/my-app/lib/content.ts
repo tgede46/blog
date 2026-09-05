@@ -12,6 +12,15 @@ export function textToBlocks(value: string): ArticleDetail["content"] {
         const lines = part.split("\n")
         return { type: "code" as const, code: lines.slice(1, -1).join("\n"), filename: "snippet.ts" }
       }
+      const image = part.match(/^!\[(.*?)\]\((\S+?)(?:\s+"(.*)")?\)$/)
+      if (image) {
+        return {
+          type: "image" as const,
+          alt: image[1].trim(),
+          url: image[2].trim(),
+          caption: image[3]?.trim(),
+        }
+      }
       return { type: "paragraph" as const, text: part }
     })
 }
@@ -22,6 +31,11 @@ export function blocksToText(blocks: ArticleDetail["content"] = []) {
       if (block.type === "heading") return `## ${block.text || ""}`
       if (block.type === "callout") return `> ${block.text || ""}`
       if (block.type === "code") return `\`\`\`\n${block.code || ""}\n\`\`\``
+      if (block.type === "image") {
+        const url = block.url || block.text || ""
+        const caption = block.caption ? ` "${block.caption.replaceAll('"', '\\"')}"` : ""
+        return url ? `![${block.alt || ""}](${url}${caption})` : ""
+      }
       return block.text || ""
     })
     .filter(Boolean)

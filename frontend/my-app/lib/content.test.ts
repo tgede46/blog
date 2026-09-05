@@ -19,4 +19,28 @@ describe("transformations du contenu d’article", () => {
     ]
     expect(textToBlocks(blocksToText(source))).toEqual(source)
   })
+
+  it("préserve les images pendant une édition", () => {
+    const source = [
+      {
+        type: "image" as const,
+        url: "https://cdn.example.com/architecture.png",
+        alt: "Schéma d’architecture",
+        caption: "API et interface",
+      },
+    ]
+
+    expect(textToBlocks(blocksToText(source))).toEqual(source)
+  })
+
+  it("accepte une image sans légende", () => {
+    expect(textToBlocks("![Capture](https://cdn.example.com/capture.png)")).toEqual([
+      {
+        type: "image",
+        url: "https://cdn.example.com/capture.png",
+        alt: "Capture",
+        caption: undefined,
+      },
+    ])
+  })
 })
