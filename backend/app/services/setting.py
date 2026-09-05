@@ -7,6 +7,8 @@ from app.schemas.setting import SettingsOut, SettingsUpdate
 DEFAULT_SETTINGS = {
     "site_name": "Blog",
     "site_description": "",
+    "author_name": "Gedeon Kpara",
+    "author_bio": "",
     "hero_title": "",
     "hero_description": "",
     "about_content": "",
@@ -14,6 +16,8 @@ DEFAULT_SETTINGS = {
     "github_url": None,
     "linkedin_url": None,
     "x_url": None,
+    "legal_name": "",
+    "address": "",
     "legal_content": "",
 }
 

@@ -68,7 +68,7 @@ async def list_articles(
 async def create_article(db: AsyncSession, data: ArticleCreate, author: User) -> Article:
     published_at = utc_now() if data.status == ArticleStatus.published else None
     article = Article(
-        slug=await generate_unique_slug(db, data.title),
+        slug=await generate_unique_slug(db, data.slug or data.title),
         title=data.title,
         excerpt=data.excerpt,
         content=_content_to_dicts(data.content),
@@ -89,7 +89,9 @@ async def update_article(db: AsyncSession, article: Article, data: ArticleUpdate
     changes = data.model_dump(exclude_unset=True)
     if "content" in changes and data.content is not None:
         changes["content"] = _content_to_dicts(data.content)
-    if "title" in changes and data.title:
+    if data.slug:
+        changes["slug"] = await generate_unique_slug(db, data.slug, article.id)
+    elif "title" in changes and data.title:
         changes["slug"] = await generate_unique_slug(db, data.title, article.id)
     if changes.get("status") == ArticleStatus.published and article.published_at is None:
         changes["published_at"] = utc_now()

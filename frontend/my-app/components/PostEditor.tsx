@@ -11,7 +11,6 @@ export default function PostEditor({ post }: { post?: AdminPost }) {
   const [title, setTitle] = useState(post?.title || "")
   const [slug, setSlug] = useState(post?.slug || "")
   const [excerpt, setExcerpt] = useState(post?.excerpt || "")
-  const [intro, setIntro] = useState(post?.intro || "")
   const [content, setContent] = useState(blocksToText(post?.content))
   const [category, setCategory] = useState(post?.category || "")
   const [tag, setTag] = useState(post?.tag || "")
@@ -30,7 +29,6 @@ export default function PostEditor({ post }: { post?: AdminPost }) {
       title: title.trim(),
       slug: slug.trim() || undefined,
       excerpt: excerpt.trim(),
-      intro: intro.trim() || undefined,
       content: textToBlocks(content),
       category: category.trim() || "Général",
       tag: tag.trim() || "Développement",
@@ -73,7 +71,6 @@ export default function PostEditor({ post }: { post?: AdminPost }) {
             <label className="block font-semibold">Titre<input value={title} onChange={(event) => setTitle(event.target.value)} className={field} required /></label>
             <label className="block font-semibold">Slug <span className="font-normal text-[#89909e]">(optionnel)</span><input value={slug} onChange={(event) => setSlug(event.target.value)} className={field} placeholder="mon-article" /></label>
             <label className="block font-semibold">Résumé<textarea value={excerpt} onChange={(event) => setExcerpt(event.target.value)} className={`${field} min-h-24`} required /></label>
-            <label className="block font-semibold">Introduction<textarea value={intro} onChange={(event) => setIntro(event.target.value)} className={`${field} min-h-24`} /></label>
             <label className="block font-semibold">Contenu<textarea value={content} onChange={(event) => setContent(event.target.value)} className={`${field} min-h-[420px] font-mono text-sm leading-7`} placeholder={"Paragraphes séparés par une ligne vide.\n\n## Intertitre\n\n> Encadré"} required /></label>
           </section>
           <aside className="h-fit space-y-5 rounded-2xl border border-black/10 bg-white p-6">

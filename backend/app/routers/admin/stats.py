@@ -2,12 +2,11 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.deps import get_db, require_admin
+from app.deps import get_db, require_editor
 from app.models.article import Article, ArticleStatus
 from app.models.subscriber import Subscriber
 from app.models.user import User
 from app.schemas.stats import ActivityItem, StatsResponse
-
 
 router = APIRouter()
 
@@ -15,7 +14,7 @@ router = APIRouter()
 @router.get("", response_model=StatsResponse)
 async def get_stats(
     db: AsyncSession = Depends(get_db),
-    _: User = Depends(require_admin),
+    _: User = Depends(require_editor),
 ) -> StatsResponse:
     subscribers = await db.scalar(select(func.count()).select_from(Subscriber).where(Subscriber.unsubscribed_at.is_(None))) or 0
     drafts = await db.scalar(select(func.count()).select_from(Article).where(Article.status == ArticleStatus.draft)) or 0

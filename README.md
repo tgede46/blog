@@ -32,7 +32,7 @@ API : `http://localhost:8000` ; frontend : `http://localhost:3000` ; santé : `G
 
 - API : `DATABASE_URL`, `SECRET_KEY` (aléatoire, au moins 32 caractères en production), `ENVIRONMENT`, `FRONTEND_URL` et `ALLOWED_ORIGINS`.
 - Auth : `ACCESS_TOKEN_EXPIRE_MINUTES` et, si nécessaire, `COOKIE_DOMAIN`/`COOKIE_SAMESITE`.
-- Frontend : `NEXT_PUBLIC_API_URL`, URL publique HTTPS de l'API sans slash final.
+- Frontend : `API_URL`, URL HTTPS de l'API sans slash final, utilisée par le rendu serveur et le proxy même origine. `NEXT_PUBLIC_API_URL` reste un fallback de compatibilité.
 - Médias : `UPLOAD_DIR`; les clés `S3_BUCKET`, `S3_REGION`, `S3_ENDPOINT_URL`, `S3_PUBLIC_BASE_URL` et `AWS_*` sont prévues pour un stockage objet.
 - E-mail : `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM_EMAIL`, `SMTP_TO_EMAIL`, `SMTP_USE_TLS`.
 
@@ -76,7 +76,7 @@ Les dépendances de test sont regroupées dans `backend/requirements-dev.txt`.
 
 1. **Neon** — créer le projet et une branche de production, activer les sauvegardes/rétention adaptées, puis fournir à Render la chaîne de connexion en remplaçant le schéma par `postgresql+asyncpg://`. Tester migrations et restaurations sur une branche Neon.
 2. **Render** — créer le service depuis `render.yaml`, renseigner `DATABASE_URL`, `FRONTEND_URL` et `ALLOWED_ORIGINS`; `SECRET_KEY` est générée par Render. Le pre-deploy exécute Alembic et `/health` sert de health check.
-3. **Vercel** — importer le dépôt, choisir `frontend/my-app` comme Root Directory et définir `NEXT_PUBLIC_API_URL=https://<api-render>`. Après le premier déploiement, reporter l'URL Vercel dans les variables CORS de Render.
+3. **Vercel** — importer le dépôt, choisir `frontend/my-app` comme Root Directory et définir `API_URL=https://<api-render>` ainsi que `NEXT_PUBLIC_SITE_URL=https://<site-vercel>`. Le rewrite `/backend-api/*` garde les cookies d’authentification sur le domaine du frontend. Après le premier déploiement, reporter l’URL Vercel dans `FRONTEND_URL` et `ALLOWED_ORIGINS` sur Render.
 
 Pour revenir en arrière : redéployer le dernier build sain sur Vercel/Render. Ne restaurer Neon que si le schéma ou les données ont été altérés; une restauration crée de préférence une nouvelle branche, validée avant de repointer `DATABASE_URL`.
 

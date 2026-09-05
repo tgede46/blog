@@ -1,11 +1,16 @@
 import type { ArticleDetail, ArticleSummary } from "./articles"
 
-export const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/$/, "")
+export const API_BASE_URL = (
+  typeof window === "undefined"
+    ? process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+    : "/backend-api"
+).replace(/\/$/, "")
 
 export type UserProfile = { id: string; email: string; name: string; avatar_url?: string | null; role?: string; created_at?: string }
 export type PublicSettings = {
-  site_name?: string; site_description?: string; author_name?: string; author_bio?: string; email?: string
-  github_url?: string; linkedin_url?: string; twitter_url?: string; legal_name?: string; address?: string
+  site_name?: string; site_description?: string; author_name?: string; author_bio?: string
+  hero_title?: string; hero_description?: string; about_content?: string; contact_email?: string
+  github_url?: string; linkedin_url?: string; x_url?: string; legal_name?: string; address?: string; legal_content?: string
   [key: string]: unknown
 }
 export type ArticleListResponse = {
@@ -13,17 +18,19 @@ export type ArticleListResponse = {
   categories?: Array<string | { name: string; count?: number }>
 }
 export type PostInput = {
-  title: string; excerpt: string; intro?: string; content: ArticleDetail["content"]; category: string; tag: string
+  title: string; excerpt: string; content: ArticleDetail["content"]; category: string; tag: string
   status: "published" | "draft"; read_minutes?: number; slug?: string
 }
 export type AdminPost = ArticleDetail & { id: string; status: "published" | "draft"; updated_at?: string }
 export type AdminStats = {
-  total_views?: number; total_posts?: number; total_subscribers?: number; total_drafts?: number
-  monthly_reads_growth?: string; posts_growth?: string; subscribers_growth?: string
-  views_history?: Array<{ date: string; views: number }>; category_distribution?: Record<string, number>
-  recent_activities?: Array<{ id: string; action: string; title: string; time: string }>
+  total_views: number
+  subscribers: number
+  drafts: number
+  published: number
+  recent_posts: AdminPost[]
+  activity: Array<{ type: string; label: string; created_at: string }>
 }
-export type MediaItem = { id: string; url: string; filename: string; created_at?: string; alt?: string }
+export type MediaItem = { id: string; url: string; filename: string; size?: number; mime_type?: string; created_at?: string; alt?: string }
 
 function queryString(params: Record<string, string | number | undefined>) {
   const search = new URLSearchParams()
@@ -75,7 +82,7 @@ export const api = {
       delete: (id: string) => apiFetch<void>(`/api/admin/posts/${encodeURIComponent(id)}`, { method: "DELETE" }),
     },
     media: {
-      list: () => apiFetch<MediaItem[]>("/api/admin/media"),
+      list: async () => (await apiFetch<{ media: MediaItem[] }>("/api/admin/media")).media,
       upload: (file: File) => { const body = new FormData(); body.append("file", file); return apiFetch<MediaItem>("/api/admin/media/upload", { method: "POST", body }) },
       delete: (id: string) => apiFetch<void>(`/api/admin/media/${encodeURIComponent(id)}`, { method: "DELETE" }),
     },

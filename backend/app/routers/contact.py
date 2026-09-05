@@ -6,7 +6,6 @@ from app.schemas.contact import ContactRequest, ContactResponse
 from app.services.contact import deliver_contact
 from app.services.setting import get_settings_values
 
-
 router = APIRouter()
 
 

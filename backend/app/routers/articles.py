@@ -7,7 +7,6 @@ from app.models.article import Article, ArticleStatus
 from app.schemas.article import ArticleDetail, ArticleListResponse, ArticleSummary
 from app.services.article import list_articles
 
-
 router = APIRouter()
 
 
@@ -20,7 +19,19 @@ async def get_articles(
     db: AsyncSession = Depends(get_db),
 ) -> ArticleListResponse:
     articles, total, pages = await list_articles(db, page, limit, category, search, ArticleStatus.published)
-    return ArticleListResponse(articles=articles, total=total, page=page, pages=pages)
+    category_result = await db.scalars(
+        select(Article.category)
+        .where(Article.status == ArticleStatus.published)
+        .distinct()
+        .order_by(Article.category)
+    )
+    return ArticleListResponse(
+        articles=articles,
+        total=total,
+        page=page,
+        pages=pages,
+        categories=list(category_result.all()),
+    )
 
 
 @router.get("/{slug}", response_model=ArticleDetail)

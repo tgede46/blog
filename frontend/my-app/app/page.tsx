@@ -14,7 +14,11 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ l
   return (
     <div className="min-h-screen bg-[#fbfaf7] text-[#1d2433]">
       <Nav loginRequired={query.login === "required"} />
-      <main id="contenu" className="mx-auto max-w-6xl px-5"><Hero description={typeof settings.site_description === "string" ? settings.site_description : undefined} /><Articles /><Newsletter /></main>
+      <main id="contenu" className="mx-auto max-w-6xl px-5">
+        <Hero title={settings.hero_title} description={settings.hero_description || settings.site_description} />
+        <Articles />
+        <Newsletter />
+      </main>
       <SiteFooter settings={settings} />
     </div>
   )

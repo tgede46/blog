@@ -40,7 +40,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <button className="md:hidden" onClick={() => setOpen(false)} aria-label="Fermer le menu"><X /></button>
       </div>
       <nav className="flex-1 space-y-1 p-4">
-        {links.map(({ href, label, icon: Icon }) => {
+        {links.filter(({ href }) => href !== "/admin/settings" || user.role === "admin").map(({ href, label, icon: Icon }) => {
           const active = href === "/admin" ? pathname === href : pathname.startsWith(href)
           return <Link key={href} href={href} onClick={() => setOpen(false)} className={`flex items-center gap-3 rounded-xl px-4 py-3 font-semibold ${active ? "bg-violet-600 text-white" : "text-[#596275] hover:bg-black/5"}`}><Icon size={19} />{label}</Link>
         })}

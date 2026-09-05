@@ -23,8 +23,14 @@ export default async function AboutPage() {
       <div className="mt-10 grid gap-10 text-lg leading-8 text-[#596275] md:grid-cols-[1.3fr_.7fr]">
         <div className="space-y-6">
           <p>{settings.author_bio || "Je suis Gedeon Kpara, développeur logiciel. J’aime transformer des problèmes complexes en produits simples, fiables et agréables à utiliser."}</p>
-          <p>Ce blog rassemble mes apprentissages sur l’architecture, le développement web, les outils et les choix humains derrière un bon produit.</p>
-          <p>Chaque article cherche à être concret : un contexte, une décision, ses compromis et ce que j’en retiens.</p>
+          {settings.about_content ? (
+            <p className="whitespace-pre-line">{settings.about_content}</p>
+          ) : (
+            <>
+              <p>Ce blog rassemble mes apprentissages sur l’architecture, le développement web, les outils et les choix humains derrière un bon produit.</p>
+              <p>Chaque article cherche à être concret : un contexte, une décision, ses compromis et ce que j’en retiens.</p>
+            </>
+          )}
         </div>
         <aside className="rounded-2xl bg-[#e9e5fb] p-7 text-base leading-7 text-[#393658]">
           <h2 className="font-heading text-xl font-bold">Travaillons ensemble</h2>

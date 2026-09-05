@@ -46,6 +46,7 @@ ContentBlock = Annotated[
 
 class ArticleCreate(BaseModel):
     title: str = Field(min_length=1, max_length=255)
+    slug: str | None = Field(default=None, min_length=1, max_length=255, pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
     excerpt: str = Field(min_length=1)
     content: list[ContentBlock] = Field(min_length=1)
     category: str = Field(min_length=1, max_length=120)
@@ -56,6 +57,7 @@ class ArticleCreate(BaseModel):
 
 class ArticleUpdate(BaseModel):
     title: str | None = Field(default=None, min_length=1, max_length=255)
+    slug: str | None = Field(default=None, min_length=1, max_length=255, pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
     excerpt: str | None = Field(default=None, min_length=1)
     content: list[ContentBlock] | None = Field(default=None, min_length=1)
     category: str | None = Field(default=None, min_length=1, max_length=120)
@@ -103,6 +105,7 @@ class ArticleListResponse(BaseModel):
     total: int
     page: int
     pages: int
+    categories: list[str] = Field(default_factory=list)
 
 
 class PostOut(ArticleDetail):

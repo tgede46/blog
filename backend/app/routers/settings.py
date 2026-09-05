@@ -5,7 +5,6 @@ from app.deps import get_db
 from app.schemas.setting import SettingsOut
 from app.services.setting import get_settings_values
 
-
 router = APIRouter()
 
 

@@ -9,12 +9,12 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
+from slugify import slugify
 from sqlalchemy import select
 
 from app.database import SessionLocal, utc_now
 from app.models.article import Article, ArticleStatus
 from app.models.user import User
-from slugify import slugify
 
 DEMO_ARTICLES = [
     {

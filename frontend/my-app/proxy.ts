@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 
-const SESSION_COOKIE_NAMES = ["access_token", "session", "sessionid", "blog_session"]
+const SESSION_COOKIE_NAMES = ["blog_access_token"]
 
 export function proxy(request: NextRequest) {
   const hasSession = SESSION_COOKIE_NAMES.some((name) => request.cookies.has(name))

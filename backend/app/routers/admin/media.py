@@ -8,9 +8,8 @@ from app.deps import get_db, require_editor
 from app.models.media import MediaFile
 from app.models.user import User
 from app.schemas.article import DeleteResponse
-from app.schemas.media import MediaListResponse, MediaOut, MediaUploadResponse
+from app.schemas.media import MediaListResponse, MediaUploadResponse
 from app.services.media import delete_stored_media, save_upload
-
 
 router = APIRouter()
 

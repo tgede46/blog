@@ -11,9 +11,10 @@ from app.config import settings
 from app.database import SessionLocal
 from app.logging_config import configure_logging
 from app.middleware import RateLimitMiddleware
-from app.routers import articles, auth, contact, newsletter, settings as public_settings
-from app.routers.admin import media, posts, settings as admin_settings, stats
-
+from app.routers import articles, auth, contact, newsletter
+from app.routers import settings as public_settings
+from app.routers.admin import media, posts, stats
+from app.routers.admin import settings as admin_settings
 
 configure_logging()
 logger = logging.getLogger(__name__)

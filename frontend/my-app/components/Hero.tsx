@@ -1,11 +1,11 @@
 import Link from "next/link"
 
-export default function Hero({ description }: { description?: string }) {
+export default function Hero({ title, description }: { title?: string; description?: string }) {
   return (
     <section className="grid min-h-[650px] items-center gap-12 py-20 md:grid-cols-[1.1fr_.9fr]">
       <div>
         <p className="mb-5 inline-flex rounded-full bg-[#f4d9e8] px-4 py-2 text-xs font-bold uppercase tracking-[.18em]">Développement · Architecture · Produit</p>
-        <h1 className="max-w-[11ch] font-heading text-5xl font-black leading-[.98] tracking-[-.05em] sm:text-7xl">Je construis, j’apprends, je partage.</h1>
+        <h1 className="max-w-[11ch] font-heading text-5xl font-black leading-[.98] tracking-[-.05em] sm:text-7xl">{title || "Je construis, j’apprends, je partage."}</h1>
         <p className="mt-7 max-w-xl text-lg leading-8 text-[#596275]">{description || "Des notes concrètes de Gedeon Kpara sur le web, le code maintenable et les décisions qui transforment une idée en produit utile."}</p>
         <div className="mt-9 flex flex-wrap gap-4"><Link href="/articles" className="rounded-full bg-[#1d2433] px-7 py-3.5 font-bold text-white">Lire les articles</Link><Link href="/a-propos" className="rounded-full border border-[#1d2433] px-7 py-3.5 font-bold">Me découvrir</Link></div>
       </div>

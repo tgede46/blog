@@ -13,7 +13,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }))
 
   try {
-    const { articles } = await api.articles.list({ page: 1, limit: 1000 })
+    const { articles } = await api.articles.list({ page: 1, limit: 100 })
     return [...staticRoutes, ...articles.map((article) => ({
       url: `${baseUrl}/articles/${article.slug}`,
       lastModified: new Date(article.published_at || article.date),

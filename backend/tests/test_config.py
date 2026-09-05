@@ -5,7 +5,12 @@ from app.config import Settings
 
 
 def test_development_cors_supports_local_frontend() -> None:
-    config = Settings(_env_file=None, frontend_url="http://localhost:3001")
+    config = Settings(
+        _env_file=None,
+        environment="development",
+        frontend_url="http://localhost:3001",
+        allowed_origins="",
+    )
     assert config.cors_origins == ["http://localhost:3001", "http://localhost:3000"]
     assert config.cookie_secure is False
 

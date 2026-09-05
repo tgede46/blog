@@ -15,7 +15,7 @@ export default async function ArticlesPage({ searchParams }: Props) {
   let settings: PublicSettings = {}
   let error = false
   try { [data, settings] = await Promise.all([api.articles.list({ page, limit: 9, category: query.category, search: query.search }), api.settings.public().catch(() => ({}))]) } catch { error = true }
-  const categories = Array.from(new Set(data.articles.map((item) => item.category).filter(Boolean))) as string[]
+  const categories = (data.categories || []).map((category) => typeof category === "string" ? category : category.name)
   function href(target: number) { const params = new URLSearchParams(); if (target > 1) params.set("page", String(target)); if (query.category) params.set("category", query.category); if (query.search) params.set("search", query.search); return `/articles${params.size ? `?${params}` : ""}` }
   return (
     <div className="min-h-screen bg-[#fbfaf7] text-[#1d2433]"><Nav /><main id="contenu" className="mx-auto max-w-6xl px-5 py-16">

@@ -9,7 +9,6 @@ from starlette.responses import JSONResponse, Response
 
 from app.config import settings
 
-
 logger = logging.getLogger("app.requests")
 
 

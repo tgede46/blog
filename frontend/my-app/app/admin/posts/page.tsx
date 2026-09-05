@@ -30,8 +30,15 @@ export default function AdminPostsPage() {
   }, [page, search, status])
 
   useEffect(() => {
-    void load()
-  }, [load])
+    api.admin.posts.list({ page, limit: 10, search, status })
+      .then((data) => {
+        setPosts(data.posts)
+        setTotal(data.total)
+        setPages(data.pages || Math.max(1, Math.ceil(data.total / 10)))
+      })
+      .catch((reason) => setError(reason instanceof Error ? reason.message : "Chargement impossible."))
+      .finally(() => setLoading(false))
+  }, [page, search, status])
 
   async function remove(post: AdminPost) {
     if (!window.confirm(`Supprimer définitivement « ${post.title} » ?`)) return

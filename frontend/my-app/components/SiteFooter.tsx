@@ -2,7 +2,7 @@ import Link from "next/link"
 import type { PublicSettings } from "@/lib/api"
 
 export default function SiteFooter({ settings = {} }: { settings?: PublicSettings }) {
-  const socials = [["GitHub", settings.github_url], ["LinkedIn", settings.linkedin_url], ["X / Twitter", settings.twitter_url]].filter((item): item is [string, string] => typeof item[1] === "string" && Boolean(item[1]))
+  const socials = [["GitHub", settings.github_url], ["LinkedIn", settings.linkedin_url], ["X / Twitter", settings.x_url]].filter((item): item is [string, string] => typeof item[1] === "string" && Boolean(item[1]))
   return (
     <footer className="border-t border-black/10 bg-white">
       <div className="mx-auto grid max-w-6xl gap-10 px-5 py-14 md:grid-cols-[1.4fr_1fr_1fr]">

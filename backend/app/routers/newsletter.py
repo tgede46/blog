@@ -2,9 +2,12 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.deps import get_db
-from app.schemas.newsletter import NewsletterRequest, SubscribeResponse, UnsubscribeResponse
+from app.schemas.newsletter import (
+    NewsletterRequest,
+    SubscribeResponse,
+    UnsubscribeResponse,
+)
 from app.services.newsletter import subscribe, unsubscribe
-
 
 router = APIRouter()
 

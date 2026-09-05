@@ -1,15 +1,19 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.deps import get_db, require_editor
 from app.models.article import Article, ArticleStatus
 from app.models.user import User
-from app.schemas.article import ArticleCreate, ArticleUpdate, DeleteResponse, PostListResponse, PostOut
+from app.schemas.article import (
+    ArticleCreate,
+    ArticleUpdate,
+    DeleteResponse,
+    PostListResponse,
+    PostOut,
+)
 from app.services.article import create_article, list_articles, update_article
-
 
 router = APIRouter()
 

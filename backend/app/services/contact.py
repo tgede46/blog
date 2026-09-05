@@ -6,7 +6,6 @@ from email.message import EmailMessage
 from app.config import settings
 from app.schemas.contact import ContactRequest
 
-
 logger = logging.getLogger(__name__)
 
 

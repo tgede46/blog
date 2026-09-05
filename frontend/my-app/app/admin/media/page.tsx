@@ -21,7 +21,12 @@ export default function AdminMediaPage() {
     }
   }, [])
 
-  useEffect(() => { void load() }, [load])
+  useEffect(() => {
+    api.admin.media.list()
+      .then(setMedia)
+      .catch((reason) => setError(reason instanceof Error ? reason.message : "Chargement impossible."))
+      .finally(() => setLoading(false))
+  }, [])
 
   async function upload(file?: File) {
     if (!file) return

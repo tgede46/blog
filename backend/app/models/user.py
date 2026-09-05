@@ -1,5 +1,5 @@
-import enum
 from datetime import datetime
+from enum import StrEnum
 
 from sqlalchemy import DateTime, Enum, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -7,7 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base, UUIDPrimaryKeyMixin, utc_now
 
 
-class UserRole(str, enum.Enum):
+class UserRole(StrEnum):
     admin = "admin"
     editor = "editor"
 

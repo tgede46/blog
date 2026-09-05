@@ -8,12 +8,16 @@ const fields: Array<{ key: keyof PublicSettings; label: string; type?: string }>
   { key: "site_description", label: "Description du site" },
   { key: "author_name", label: "Nom de l’auteur" },
   { key: "author_bio", label: "Biographie" },
-  { key: "email", label: "Email public", type: "email" },
+  { key: "hero_title", label: "Titre de la page d’accueil" },
+  { key: "hero_description", label: "Introduction de la page d’accueil" },
+  { key: "about_content", label: "Contenu À propos" },
+  { key: "contact_email", label: "Email public", type: "email" },
   { key: "github_url", label: "URL GitHub", type: "url" },
   { key: "linkedin_url", label: "URL LinkedIn", type: "url" },
-  { key: "twitter_url", label: "URL X / Twitter", type: "url" },
+  { key: "x_url", label: "URL X / Twitter", type: "url" },
   { key: "legal_name", label: "Nom légal" },
   { key: "address", label: "Adresse légale" },
+  { key: "legal_content", label: "Complément des mentions légales" },
 ]
 
 export default function AdminSettingsPage() {
@@ -48,7 +52,7 @@ export default function AdminSettingsPage() {
       <h1 className="mt-1 font-heading text-4xl font-black">Réglages</h1>
       <form onSubmit={save} className="mt-8 space-y-5 rounded-2xl border border-black/10 bg-white p-6 sm:p-8">
         {fields.map(({ key, label, type }) => {
-          const multiline = key === "site_description" || key === "author_bio" || key === "address"
+          const multiline = ["site_description", "author_bio", "hero_description", "about_content", "address", "legal_content"].includes(String(key))
           const value = typeof settings[key] === "string" ? String(settings[key]) : ""
           const common = { value, onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setSettings((current) => ({ ...current, [key]: event.target.value })), className: "mt-2 w-full rounded-xl border border-black/15 bg-[#f8f7f4] px-4 py-3 outline-none focus:border-violet-500" }
           return <label key={key} className="block font-semibold">{label}{multiline ? <textarea {...common} className={`${common.className} min-h-24`} /> : <input {...common} type={type || "text"} />}</label>

@@ -36,7 +36,10 @@ export default async function ArticlePage({ params }: Props) {
         if (block.type === "heading") return <h2 key={index} id={headingId(block.text || "", index)} className="scroll-mt-28 pt-8 font-heading text-3xl font-bold">{block.text}</h2>
         if (block.type === "code") return <CodeBlock key={index} code={block.code || ""} filename={block.filename} />
         if (block.type === "callout") return <blockquote key={index} className="rounded-2xl border-l-4 border-violet-500 bg-[#eeeafb] p-6">{block.text}</blockquote>
-        if (block.type === "image" && block.url) return <figure key={index}><img src={block.url} alt={block.alt || block.caption || ""} className="w-full rounded-2xl" /><figcaption className="mt-2 text-center text-sm">{block.caption}</figcaption></figure>
+        if (block.type === "image" && (block.url || block.text)) {
+          const imageUrl = block.url || block.text || ""
+          return <figure key={index}><img src={imageUrl} alt={block.alt || block.caption || ""} className="w-full rounded-2xl" /><figcaption className="mt-2 text-center text-sm">{block.caption}</figcaption></figure>
+        }
         return null
       })}</div><div className="mt-14 rounded-2xl bg-white p-7"><p className="text-xs font-bold uppercase text-violet-700">Écrit par</p><h2 className="mt-2 font-heading text-2xl font-bold">{String(settings.author_name || "Gedeon Kpara")}</h2><p className="mt-3 text-[#687184]">{String(settings.author_bio || "Développeur et auteur de ce blog.")}</p></div></article></div>
       {related.length > 0 && <section className="mt-24"><h2 className="mb-8 font-heading text-3xl font-black">À lire ensuite</h2><div className="grid gap-6 md:grid-cols-3">{related.slice(0, 3).map((item) => <ArticleCard key={item.slug} href={`/articles/${item.slug}`} date={item.published_at || item.date} title={item.title} excerpt={item.excerpt} tag={item.tag} minutes={item.minutes} />)}</div></section>}<Newsletter />
