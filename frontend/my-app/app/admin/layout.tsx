@@ -4,15 +4,18 @@ import React, { useState } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { Search, Bell, Settings, LayoutDashboard, FileText, PenSquare, Image as ImageIcon, BookOpen, LifeBuoy, LogOut, User } from "lucide-react"
+import { useAuth } from "@/lib/auth"
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname()
     const router = useRouter()
+    const { user, logout } = useAuth()
     const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
     const [isProfileOpen, setIsProfileOpen] = useState(false)
 
     const handleLogout = () => {
         setIsProfileOpen(false)
+        logout()
         router.push("/")
     }
 
@@ -148,19 +151,25 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                 onClick={() => { setIsProfileOpen(!isProfileOpen); setIsNotificationsOpen(false) }}
                                 className="w-10 h-10 border-2 border-[#121212] overflow-hidden bg-blue-100 flex items-center justify-center cursor-pointer hover:shadow-[2px_2px_0px_0px_#121212] transition-all"
                             >
-                                <img src="https://i.pravatar.cc/100?img=11" alt="Admin" className="w-full h-full object-cover" />
+                                {user?.avatar_url
+                                    ? <img src={user.avatar_url} alt={user.name} className="w-full h-full object-cover" />
+                                    : <User size={18} strokeWidth={2.5} />
+                                }
                             </button>
 
                             {isProfileOpen && (
                                 <div className="absolute top-12 right-0 w-[220px] bg-white border-4 border-[#121212] shadow-[4px_4px_0px_0px_#121212] flex flex-col z-50 animate-in slide-in-from-top-2 duration-200">
                                     {/* Profile Header */}
                                     <div className="bg-[#ddd6fe] border-b-2 border-[#121212] p-4 flex items-center gap-3">
-                                        <div className="w-10 h-10 border-2 border-[#121212] overflow-hidden flex-shrink-0">
-                                            <img src="https://i.pravatar.cc/100?img=11" alt="Admin" className="w-full h-full object-cover" />
+                                        <div className="w-10 h-10 border-2 border-[#121212] overflow-hidden flex-shrink-0 bg-blue-100 flex items-center justify-center">
+                                            {user?.avatar_url
+                                                ? <img src={user.avatar_url} alt={user.name} className="w-full h-full object-cover" />
+                                                : <User size={16} strokeWidth={2.5} />
+                                            }
                                         </div>
                                         <div>
-                                            <p className="font-black text-sm">Admin</p>
-                                            <p className="text-[10px] font-bold text-gray-600 uppercase">admin@gmail.com</p>
+                                            <p className="font-black text-sm">{user?.name ?? "Admin"}</p>
+                                            <p className="text-[10px] font-bold text-gray-600 uppercase">{user?.email}</p>
                                         </div>
                                     </div>
 

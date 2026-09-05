@@ -3,23 +3,45 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import React from "react"
 import SiteFooter from "../../../components/SiteFooter"
-import { articles, getArticleBySlug } from "../../../lib/articles"
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
 type PageProps = {
   params: Promise<{ slug: string }>
 }
 
+async function getArticle(slug: string) {
+  try {
+    const res = await fetch(`${API_BASE}/api/articles/${slug}`, { next: { revalidate: 60 } })
+    if (!res.ok) return null
+    return await res.json()
+  } catch {
+    return null
+  }
+}
+
+async function getRelated(currentSlug: string) {
+  try {
+    const res = await fetch(`${API_BASE}/api/articles?page=1`, { next: { revalidate: 60 } })
+    if (!res.ok) return []
+    const data = await res.json()
+    return (data.articles ?? []).filter((a: { slug: string }) => a.slug !== currentSlug).slice(0, 3)
+  } catch {
+    return []
+  }
+}
+
 export default async function ArticlePage({ params }: PageProps) {
   const { slug } = await params
-  const article = getArticleBySlug(slug)
+  const source = await getArticle(slug)
 
-  if (!article) {
+  if (!source) {
     notFound()
   }
 
-  const source = articles.find((item) => item.slug === article.slug) ?? article
-  const related = articles.filter((item) => item.slug !== source.slug).slice(0, 3)
-  const headings = source.content.filter((block) => block.type === "heading")
+  const related = await getRelated(slug)
+  const headings = source.content.filter((block: { type: string }) => block.type === "heading")
+
 
   return (
     <div className="bg-[#fcf9f8] text-on-surface font-serif">

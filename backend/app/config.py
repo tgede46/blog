@@ -27,7 +27,14 @@ class Settings(BaseSettings):
 
     @property
     def cors_origins(self) -> list[str]:
-        return [str(self.frontend_url).rstrip("/")]
+        base = str(self.frontend_url).rstrip("/")
+        # Also allow the alternate Next.js port (3001) in case 3000 is taken
+        alts = []
+        for port in ("3000", "3001"):
+            candidate = f"http://localhost:{port}"
+            if candidate != base:
+                alts.append(candidate)
+        return [base] + alts
 
 
 @lru_cache
