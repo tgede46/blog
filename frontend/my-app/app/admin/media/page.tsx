@@ -1,4 +1,5 @@
 "use client"
+/* eslint-disable @next/next/no-img-element */
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import { Trash2, Upload } from "lucide-react"
@@ -11,7 +12,6 @@ export default function AdminMediaPage() {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const load = useCallback(async () => {
-    setLoading(true)
     try {
       setMedia(await api.admin.media.list())
     } catch (reason) {
@@ -55,7 +55,7 @@ export default function AdminMediaPage() {
       {error && <div className="mt-6 rounded-xl bg-red-50 p-4 text-red-700" role="alert">{error}</div>}
       {loading ? <p className="mt-10 text-[#737b8d]">Chargement…</p> : media.length ? (
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {media.map((item) => <article key={item.id} className="overflow-hidden rounded-2xl border border-black/10 bg-white"><div className="aspect-video bg-[#eee]">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={item.url} alt={item.alt || item.filename} className="h-full w-full object-cover" /></div><div className="flex items-center justify-between gap-3 p-4"><button title="Copier l’URL" onClick={() => void navigator.clipboard.writeText(item.url)} className="min-w-0 truncate text-left text-sm font-semibold hover:text-violet-700">{item.filename}</button><button onClick={() => void remove(item)} className="shrink-0 rounded-lg p-2 text-red-700 hover:bg-red-50" aria-label={`Supprimer ${item.filename}`}><Trash2 size={18} /></button></div></article>)}
+          {media.map((item) => <article key={item.id} className="overflow-hidden rounded-2xl border border-black/10 bg-white"><div className="aspect-video bg-[#eee]"><img src={item.url} alt={item.alt || item.filename} className="h-full w-full object-cover" /></div><div className="flex items-center justify-between gap-3 p-4"><button title="Copier l’URL" onClick={() => void navigator.clipboard.writeText(item.url)} className="min-w-0 truncate text-left text-sm font-semibold hover:text-violet-700">{item.filename}</button><button onClick={() => void remove(item)} className="shrink-0 rounded-lg p-2 text-red-700 hover:bg-red-50" aria-label={`Supprimer ${item.filename}`}><Trash2 size={18} /></button></div></article>)}
         </div>
       ) : <div className="mt-8 rounded-2xl border border-dashed border-black/20 bg-white p-12 text-center"><h2 className="font-heading text-2xl font-bold">Aucun média</h2><p className="mt-2 text-[#737b8d]">Importez une première image pour commencer.</p></div>}
     </div>
