@@ -27,6 +27,13 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             client_ip = request.client.host if request.client else "unknown"
         sensitive_path = request.url.path in {
             "/api/auth/login",
+            "/api/auth/mfa/verify",
+            "/api/auth/mfa/email/send",
+            "/api/auth/mfa/email/setup",
+            "/api/auth/mfa/email/confirm",
+            "/api/auth/mfa/totp/setup",
+            "/api/auth/mfa/totp/confirm",
+            "/api/auth/password",
             "/api/contact",
             "/api/newsletter/subscribe",
         }

@@ -89,7 +89,7 @@ async def login(payload: LoginRequest, response: Response, db: AsyncSession = De
             methods=methods,
         )
 
-    token = create_access_token(user.id)
+    token = create_access_token(user.id, user.token_version)
     set_auth_cookie(response, token)
     return LoginResponse(access_token=token, user=UserOut.model_validate(user))
 
@@ -125,7 +125,7 @@ async def verify_mfa(payload: MFAVerifyRequest, response: Response, db: AsyncSes
         await db.commit()
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authentication code")
     await db.commit()
-    token = create_access_token(user.id)
+    token = create_access_token(user.id, user.token_version)
     set_auth_cookie(response, token)
     return LoginResponse(access_token=token, user=UserOut.model_validate(user))
 
@@ -190,6 +190,7 @@ async def confirm_email_mfa(
 @router.post("/password", response_model=MessageResponse)
 async def change_password(
     payload: PasswordChangeRequest,
+    response: Response,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> MessageResponse:
@@ -198,8 +199,10 @@ async def change_password(
     if verify_password(payload.new_password, user.password_hash):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="New password must be different")
     user.password_hash = hash_password(payload.new_password)
+    user.token_version += 1
     clear_email_otp(user)
     await db.commit()
+    set_auth_cookie(response, create_access_token(user.id, user.token_version))
     return MessageResponse(message="Password updated")
 
 

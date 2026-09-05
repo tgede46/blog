@@ -2,6 +2,7 @@
 
 import { AlertCircle, KeyRound, Loader2, Mail, ShieldCheck, X } from "lucide-react"
 import React, { useState } from "react"
+import { createPortal } from "react-dom"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/auth"
 import { api, type MFAMethod } from "@/lib/api"
@@ -47,7 +48,7 @@ export default function ConnectDialog({ open, onClose }: ConnectDialogProps) {
     return () => window.removeEventListener("keydown", onKeyDown)
   }, [closeDialog, open])
 
-  if (!open) {
+  if (!open || typeof document === "undefined") {
     return null
   }
 
@@ -106,7 +107,7 @@ export default function ConnectDialog({ open, onClose }: ConnectDialogProps) {
     }
   }
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto bg-black/50 px-4 py-10 sm:items-center"
       role="presentation"
@@ -199,6 +200,7 @@ export default function ConnectDialog({ open, onClose }: ConnectDialogProps) {
           </button>
         </form>}
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }

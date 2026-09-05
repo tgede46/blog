@@ -26,13 +26,14 @@ def test_login_returns_bearer_and_sets_http_only_cookie(monkeypatch) -> None:
         totp_enabled=False,
         email_mfa_enabled=False,
         recovery_code_hashes=None,
+        token_version=0,
     )
 
     async def authenticate(*_args) -> object:
         return user
 
     monkeypatch.setattr(auth_router, "authenticate_user", authenticate)
-    monkeypatch.setattr(auth_router, "create_access_token", lambda _user_id: "signed-token")
+    monkeypatch.setattr(auth_router, "create_access_token", lambda *_args: "signed-token")
     app.dependency_overrides[get_db] = fake_db
     try:
         response = TestClient(app).post(
@@ -59,6 +60,7 @@ def test_login_requires_second_factor_when_enabled(monkeypatch) -> None:
         totp_enabled=True,
         email_mfa_enabled=True,
         recovery_code_hashes='["hash"]',
+        token_version=0,
     )
 
     async def authenticate(*_args) -> object:

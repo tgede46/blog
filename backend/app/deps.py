@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import settings
 from app.database import get_db_session
 from app.models.user import User, UserRole
-from app.services.auth import decode_access_token
+from app.services.auth import decode_access_token_claims
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login", auto_error=False)
 
@@ -34,19 +34,26 @@ async def get_current_user(
         origin = request.headers.get("origin")
         if not origin or origin.rstrip("/") not in settings.cors_origins:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid request origin")
-    user_id = decode_access_token(token)
-    if user_id is None:
+    claims = decode_access_token_claims(token)
+    if claims is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid authentication credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+    user_id, token_version = claims
     user = await db.get(User, user_id)
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User not found",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    if user.token_version != token_version:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Session expired",
             headers={"WWW-Authenticate": "Bearer"},
         )
     return user

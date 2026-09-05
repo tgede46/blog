@@ -30,6 +30,7 @@ class User(UUIDPrimaryKeyMixin, Base):
     email_otp_sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     email_otp_attempts: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     recovery_code_hashes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    token_version: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, nullable=False)
 
     articles = relationship("Article", back_populates="author", cascade="all, delete-orphan")
