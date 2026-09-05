@@ -32,7 +32,7 @@ export default async function AboutPage() {
             </>
           )}
         </div>
-        <aside className="rounded-2xl bg-[#e9e5fb] p-7 text-base leading-7 text-[#393658]">
+        <aside className="neo-card rotate-1 bg-primary-fixed p-7 text-base leading-7 text-[#393658]">
           <h2 className="font-heading text-xl font-bold">Travaillons ensemble</h2>
           <p className="mt-3">Un projet, une idée d’article ou simplement une question ?</p>
           <Link href="/contact" className="mt-5 inline-block font-bold text-violet-700">Me contacter →</Link>

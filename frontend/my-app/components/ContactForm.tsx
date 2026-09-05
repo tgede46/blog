@@ -28,10 +28,10 @@ export default function ContactForm() {
     }
   }
 
-  const fieldClass = "mt-2 w-full rounded-xl border border-black/15 bg-white px-4 py-3 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100"
+  const fieldClass = "neo-field mt-2 w-full px-4 py-3 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100"
 
   return (
-    <form onSubmit={submit} className="mt-10 space-y-5 rounded-2xl border border-black/10 bg-white p-6 sm:p-9">
+    <form onSubmit={submit} className="neo-card mt-10 space-y-5 p-6 sm:p-9">
       <div className="grid gap-5 sm:grid-cols-2">
         <label className="font-semibold">Nom<input className={fieldClass} name="name" autoComplete="name" required /></label>
         <label className="font-semibold">Email<input className={fieldClass} name="email" type="email" autoComplete="email" required /></label>
@@ -39,7 +39,7 @@ export default function ContactForm() {
       <label className="block font-semibold">Sujet<input className={fieldClass} name="subject" required /></label>
       <label className="block font-semibold">Message<textarea className={`${fieldClass} min-h-44 resize-y`} name="message" required /></label>
       <div className="flex flex-wrap items-center gap-5">
-        <button disabled={loading} className="rounded-full bg-[#1d2433] px-7 py-3.5 font-bold text-white disabled:opacity-60">{loading ? "Envoi…" : "Envoyer le message"}</button>
+        <button disabled={loading} className="neo-button bg-tertiary-fixed px-7 py-3.5 font-black uppercase tracking-wide disabled:opacity-60">{loading ? "Envoi…" : "Envoyer le message"}</button>
         <p aria-live="polite" className="text-sm text-[#596275]">{status}</p>
       </div>
     </form>

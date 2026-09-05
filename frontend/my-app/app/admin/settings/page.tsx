@@ -50,14 +50,14 @@ export default function AdminSettingsPage() {
     <div className="mx-auto max-w-3xl">
       <p className="text-sm font-semibold text-violet-700">Personnalisation</p>
       <h1 className="mt-1 font-heading text-4xl font-black">Réglages</h1>
-      <form onSubmit={save} className="mt-8 space-y-5 rounded-2xl border border-black/10 bg-white p-6 sm:p-8">
+      <form onSubmit={save} className="neo-card mt-8 space-y-5 p-6 sm:p-8">
         {fields.map(({ key, label, type }) => {
           const multiline = ["site_description", "author_bio", "hero_description", "about_content", "address", "legal_content"].includes(String(key))
           const value = typeof settings[key] === "string" ? String(settings[key]) : ""
-          const common = { value, onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setSettings((current) => ({ ...current, [key]: event.target.value })), className: "mt-2 w-full rounded-xl border border-black/15 bg-[#f8f7f4] px-4 py-3 outline-none focus:border-violet-500" }
+          const common = { value, onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setSettings((current) => ({ ...current, [key]: event.target.value })), className: "neo-field mt-2 w-full bg-[#f8f7f4] px-4 py-3 outline-none focus:border-violet-500" }
           return <label key={key} className="block font-semibold">{label}{multiline ? <textarea {...common} className={`${common.className} min-h-24`} /> : <input {...common} type={type || "text"} />}</label>
         })}
-        <div className="flex flex-wrap items-center gap-5 pt-2"><button disabled={loading} className="rounded-xl bg-violet-600 px-6 py-3 font-bold text-white disabled:opacity-50">{loading ? "Enregistrement…" : "Enregistrer"}</button><p aria-live="polite" className="text-sm text-[#596275]">{message}</p></div>
+        <div className="flex flex-wrap items-center gap-5 pt-2"><button disabled={loading} className="neo-button bg-primary px-6 py-3 font-bold text-white disabled:opacity-50">{loading ? "Enregistrement…" : "Enregistrer"}</button><p aria-live="polite" className="text-sm text-[#596275]">{message}</p></div>
       </form>
     </div>
   )
