@@ -5,7 +5,7 @@ export default function Hero({ title, description }: { title?: string; descripti
     <section className="grid min-h-[650px] items-center gap-14 border-b-2 border-on-surface/10 py-20 md:grid-cols-[1.1fr_.9fr]">
       <div>
         <p className="mb-6 inline-flex -rotate-1 border-2 border-on-surface bg-js-rose px-4 py-2 text-xs font-black uppercase tracking-[.18em] hard-shadow-sm">Développement · Architecture · Produit</p>
-        <h1 className="max-w-[11ch] font-heading text-5xl font-black leading-[.98] tracking-[-.05em] sm:text-7xl">{title || "Je construis, j’apprends, je partage."}</h1>
+        <h1 className="max-w-3xl font-heading text-5xl font-black leading-[.98] tracking-[-.05em] sm:text-7xl">{title || "Apprenez le Java, TypeScript et Python à travers différents articles"}</h1>
         <p className="mt-7 max-w-xl text-lg leading-8 text-[#596275]">{description || "Des notes concrètes de Gedeon Kpara sur le web, le code maintenable et les décisions qui transforment une idée en produit utile."}</p>
         <div className="mt-9 flex flex-wrap gap-5"><Link href="/articles" className="neo-button bg-primary-fixed px-7 py-3.5 font-black uppercase tracking-wide">Lire les articles</Link><Link href="/a-propos" className="neo-button bg-ts-blue px-7 py-3.5 font-black uppercase tracking-wide">Me découvrir</Link></div>
       </div>
