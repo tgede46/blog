@@ -17,8 +17,6 @@ export default function AdminPostsPage() {
   const [error, setError] = useState("")
 
   const load = useCallback(async () => {
-    setLoading(true)
-    setError("")
     try {
       const data = await api.admin.posts.list({ page, limit: 10, search, status })
       setPosts(data.posts)

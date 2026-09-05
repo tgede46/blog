@@ -1,92 +1,29 @@
-import React from "react"
-import ArticleCard from "../../components/ArticleCard"
-import SiteFooter from "../../components/SiteFooter"
-import Nav from "../../components/Nav"
+import Link from "next/link"
+import Nav from "@/components/Nav"
+import SiteFooter from "@/components/SiteFooter"
+import Newsletter from "@/components/Newsletter"
+import ArticleCard from "@/components/ArticleCard"
+import { api, type ArticleListResponse, type PublicSettings } from "@/lib/api"
 
-type Article = {
-  slug: string
-  date: string
-  title: string
-  excerpt: string
-  tag: string
-  minutes: string
-}
+export const metadata = { title: "Articles", description: "Tous les articles de Gedeon Kpara." }
+type Props = { searchParams: Promise<{ page?: string; category?: string; search?: string }> }
 
-async function getAllArticles(): Promise<Article[]> {
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/articles?page=1`,
-      { next: { revalidate: 60 } }
-    )
-    if (!res.ok) return []
-    const data = await res.json()
-    return data.articles ?? []
-  } catch {
-    return []
-  }
-}
-
-export default async function ArticlesPage() {
-  const articles = await getAllArticles()
-
+export default async function ArticlesPage({ searchParams }: Props) {
+  const query = await searchParams
+  const page = Math.max(1, Number(query.page) || 1)
+  let data: ArticleListResponse = { articles: [], total: 0, page, pages: 1 }
+  let settings: PublicSettings = {}
+  let error = false
+  try { [data, settings] = await Promise.all([api.articles.list({ page, limit: 9, category: query.category, search: query.search }), api.settings.public().catch(() => ({}))]) } catch { error = true }
+  const categories = Array.from(new Set(data.articles.map((item) => item.category).filter(Boolean))) as string[]
+  function href(target: number) { const params = new URLSearchParams(); if (target > 1) params.set("page", String(target)); if (query.category) params.set("category", query.category); if (query.search) params.set("search", query.search); return `/articles${params.size ? `?${params}` : ""}` }
   return (
-    <div className="bg-surface text-on-surface font-body selection:bg-tertiary-fixed">
-      <Nav />
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          <main className="lg:col-span-2">
-            <div className="mb-8">
-              <div className="inline-block px-3 py-1 bg-surface-container-lowest border-2 border-on-surface font-headline font-bold text-xs uppercase tracking-widest hard-shadow-sm mb-4">
-                ARCHIVES
-              </div>
-              <h1 className="font-headline font-bold text-4xl md:text-5xl tracking-tight">
-                Tous les <span className="underline decoration-tertiary-fixed decoration-8">Articles</span>
-              </h1>
-              <p className="text-on-surface/60 mt-4">
-                {articles.length} article{articles.length !== 1 ? "s" : ""} — explorations techniques, tutoriels et retours d&apos;expérience.
-              </p>
-            </div>
-
-            <div className="space-y-8">
-              {articles.map((a) => (
-                <ArticleCard
-                  key={a.slug}
-                  href={`/articles/${a.slug}`}
-                  date={a.date}
-                  title={a.title}
-                  excerpt={a.excerpt}
-                  tag={a.tag}
-                  minutes={a.minutes}
-                />
-              ))}
-            </div>
-          </main>
-
-          <aside className="lg:col-span-1">
-            <div className="space-y-10">
-              <div>
-                <h4 className="font-headline font-bold uppercase text-sm tracking-widest">SEARCH</h4>
-                <div className="mt-2">
-                  <input className="w-full border-2 border-on-surface px-4 py-2 placeholder:text-on-surface/40" placeholder="Search articles..." />
-                </div>
-              </div>
-
-              <div className="border-2 border-on-surface p-6 bg-tertiary-fixed relative">
-                <div className="absolute -right-3 -bottom-3 w-3 h-3 bg-on-surface" />
-                <h4 className="font-headline font-bold text-lg text-on-tertiary-fixed">Stay Synchronized</h4>
-                <p className="mt-2 text-on-tertiary-fixed/90">Join developers receiving monthly technical insights and architectural deep dives. No fluff, just code.</p>
-                <div className="mt-4">
-                  <input className="w-full px-3 py-2 border border-on-surface" placeholder="Your email address" />
-                  <button className="mt-3 w-full bg-[#212121] text-[#FDE047] font-bold px-3 py-2">SUBSCRIBE NOW</button>
-                </div>
-              </div>
-            </div>
-          </aside>
-        </div>
-
-        <SiteFooter />
-      </div>
-    </div>
+    <div className="min-h-screen bg-[#fbfaf7] text-[#1d2433]"><Nav /><main id="contenu" className="mx-auto max-w-6xl px-5 py-16">
+      <p className="text-xs font-bold uppercase tracking-[.2em] text-violet-700">Archives</p><h1 className="mt-3 font-heading text-5xl font-black sm:text-6xl">Articles</h1><p className="mt-5 text-lg text-[#687184]">Guides, retours d’expérience et réflexions sur le logiciel.</p>
+      <form className="mt-10 flex flex-col gap-3 rounded-2xl bg-white p-4 sm:flex-row"><input name="search" defaultValue={query.search} className="min-w-0 flex-1 rounded-xl bg-[#f5f4f0] px-5 py-3 outline-none" aria-label="Rechercher" placeholder="Rechercher…" />{query.category && <input type="hidden" name="category" value={query.category} />}<button className="rounded-xl bg-[#1d2433] px-6 py-3 font-bold text-white">Rechercher</button></form>
+      {categories.length > 0 && <nav className="mt-5 flex flex-wrap gap-2" aria-label="Catégories"><Link href="/articles" className="rounded-full bg-white px-4 py-2">Toutes</Link>{categories.map((category) => <Link key={category} href={`/articles?category=${encodeURIComponent(category)}`} className={`rounded-full px-4 py-2 ${query.category === category ? "bg-violet-600 text-white" : "bg-white"}`}>{category}</Link>)}</nav>}
+      {error ? <div className="mt-10 rounded-xl bg-red-50 p-6 text-red-700">Impossible de charger les articles.</div> : data.articles.length ? <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">{data.articles.map((article) => <ArticleCard key={article.slug} href={`/articles/${article.slug}`} date={article.published_at || article.date} title={article.title} excerpt={article.excerpt} tag={article.tag} minutes={article.minutes} />)}</div> : <div className="mt-10 rounded-2xl border border-dashed border-black/20 bg-white p-12 text-center">Aucun article trouvé.</div>}
+      {data.pages > 1 && <nav className="mt-10 flex justify-center gap-4" aria-label="Pagination">{page > 1 && <Link href={href(page - 1)}>← Précédent</Link>}<span>{page} / {data.pages}</span>{page < data.pages && <Link href={href(page + 1)}>Suivant →</Link>}</nav>}<Newsletter />
+    </main><SiteFooter settings={settings} /></div>
   )
 }
-

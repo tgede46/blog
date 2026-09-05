@@ -70,7 +70,7 @@ npm run lint
 npm run build
 ```
 
-La CI installe `ruff` et `pytest` séparément, car ils ne figurent pas encore dans les dépendances du backend.
+Les dépendances de test sont regroupées dans `backend/requirements-dev.txt`.
 
 ## Déploiement
 
@@ -82,6 +82,6 @@ Pour revenir en arrière : redéployer le dernier build sain sur Vercel/Render. 
 
 ### Stockage objet et SMTP
 
-Le code actuel écrit les uploads sur le disque local de l'API, qui est éphémère sur Render. Un disque persistant peut dépanner, mais un stockage S3-compatible est requis pour une production durable. Les variables S3 sont présentes dans la configuration, mais l'upload objet n'est pas encore implémenté.
+En développement, les uploads sont écrits sur disque. Sur Render, configurer les variables S3 compatibles afin d'utiliser le stockage objet implémenté par l'API ; le dossier `/tmp/uploads` reste uniquement un fallback éphémère.
 
-Configurer les variables SMTP chez Render pour l'envoi des messages de contact, puis tester STARTTLS, l'expéditeur et le destinataire avec le fournisseur retenu. Le service newsletter, lui, ne fait actuellement que stocker les abonnements en base et n'envoie pas de campagne.
+Configurer les variables SMTP chez Render pour l'envoi des messages de contact, puis tester STARTTLS, l'expéditeur et le destinataire avec le fournisseur retenu. La newsletter stocke les abonnements ; l'envoi de campagnes reste à la charge du fournisseur marketing retenu.

@@ -1,36 +1,18 @@
-import Image from "next/image"
-import React from "react"
+import Link from "next/link"
 
-export default function Hero() {
+export default function Hero({ description }: { description?: string }) {
   return (
-    <section className="py-24 md:py-32 flex flex-col md:flex-row items-center gap-16 border-b-2 border-on-surface/10">
-      <div className="flex-1 space-y-8">
-        <div className="inline-block px-3 py-1 bg-js-rose border-2 border-on-surface font-headline font-bold text-sm uppercase tracking-widest hard-shadow-sm">
-          Développeur &amp; Formateur
-        </div>
-        <h1 className="font-headline font-bold text-5xl md:text-7xl leading-[1.1] tracking-tight text-on-surface">
-          Apprenez le <span className="underline decoration-tertiary-fixed decoration-8 underline-offset-4">Java</span>, TypeScript et Python.
-        </h1>
-        <p className="text-xl md:text-2xl text-on-surface/80 max-w-2xl leading-relaxed">
-          À travers différents articles et vidéos, je partage mon expérience pour vous aider à devenir un meilleur développeur web.
-        </p>
-        <div className="flex flex-wrap gap-6 pt-4">
-          <button className="bg-primary-fixed border-2 border-on-surface px-8 py-4 font-headline font-bold text-lg uppercase tracking-wider hard-shadow hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all">À propos</button>
-          <button className="bg-surface-container-lowest border-2 border-on-surface px-8 py-4 font-headline font-bold text-lg uppercase tracking-wider hard-shadow hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all">Contact</button>
-        </div>
+    <section className="grid min-h-[650px] items-center gap-12 py-20 md:grid-cols-[1.1fr_.9fr]">
+      <div>
+        <p className="mb-5 inline-flex rounded-full bg-[#f4d9e8] px-4 py-2 text-xs font-bold uppercase tracking-[.18em]">Développement · Architecture · Produit</p>
+        <h1 className="max-w-[11ch] font-heading text-5xl font-black leading-[.98] tracking-[-.05em] sm:text-7xl">Je construis, j’apprends, je partage.</h1>
+        <p className="mt-7 max-w-xl text-lg leading-8 text-[#596275]">{description || "Des notes concrètes de Gedeon Kpara sur le web, le code maintenable et les décisions qui transforment une idée en produit utile."}</p>
+        <div className="mt-9 flex flex-wrap gap-4"><Link href="/articles" className="rounded-full bg-[#1d2433] px-7 py-3.5 font-bold text-white">Lire les articles</Link><Link href="/a-propos" className="rounded-full border border-[#1d2433] px-7 py-3.5 font-bold">Me découvrir</Link></div>
       </div>
-      <div className="flex-1 relative hidden lg:block">
-        <div className="w-full aspect-square border-2 border-on-surface bg-tertiary-fixed rotate-3 absolute inset-0 -z-10"></div>
-        <div className="w-full aspect-square border-2 border-on-surface bg-surface-container-lowest overflow-hidden">
-          <Image
-            alt="Developer workspace"
-            className="w-full h-full object-cover grayscale contrast-125"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjv-WVi68JkRH1ksbhp_ZL8dbplUsZt7ykqPE5ZyHLKoawEkob6X7Oj65Bn1cKlweaNn_HWO40T3l9LuTG8RrzkwuE4P-JbDcGP4aCHhsf47C5t1mjmQdfkn1a0a3IEC06IPTmqQxFIHKdEjJ0sg3pMEgj_uyscFYp3SFBPfTiaKa9N3lxhpGqV5wbH1LDEBcirEuudqlTo4eySBgjDAv347cFQe9viQ8Oi--9GL-pm6jCPIKnXykoE6wWbA6sJIF4HjzJJRWDmS2q"
-            width={800}
-            height={800}
-            loading="eager"
-          />
-        </div>
+      <div className="relative mx-auto aspect-square w-full max-w-[450px]" aria-hidden="true">
+        <div className="absolute inset-5 rotate-6 rounded-[3rem] bg-[#d9e8ff]" />
+        <div className="absolute inset-0 -rotate-3 rounded-[3rem] bg-[#f9e7a9]" />
+        <svg viewBox="0 0 500 500" className="relative h-full w-full"><path d="M100 350c28-104 80-170 158-198 73-26 138 29 153 99 15 68-27 143-99 164-84 25-188 3-212-65Z" fill="#fffaf0" stroke="#1d2433" strokeWidth="4"/><rect x="135" y="184" width="234" height="151" rx="16" fill="#fff" stroke="#1d2433" strokeWidth="4"/><path d="M162 220h80M162 246h150M162 272h105" stroke="#8b5cf6" strokeWidth="10" strokeLinecap="round"/><path d="m215 366 26-31h52l28 31" fill="#f4d9e8" stroke="#1d2433" strokeWidth="4"/><circle cx="392" cy="126" r="30" fill="#d6f3df" stroke="#1d2433" strokeWidth="4"/></svg>
       </div>
     </section>
   )

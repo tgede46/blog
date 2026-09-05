@@ -20,8 +20,11 @@ const merriweather = Merriweather({
 });
 
 export const metadata: Metadata = {
-  title: "Gedeon Kpara — Dev Blog",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+  title: { default: "Gedeon Kpara — Développement & architecture", template: "%s | Gedeon Kpara" },
   description: "Articles sur l'architecture logicielle, TypeScript, Node.js et les bonnes pratiques de développement.",
+  openGraph: { type: "website", locale: "fr_FR", siteName: "Gedeon Kpara" },
+  alternates: { types: { "application/rss+xml": "/feed.xml" } },
 };
 
 export default function RootLayout({
@@ -34,7 +37,8 @@ export default function RootLayout({
       lang="fr"
       className={`${geistSans.variable} ${geistMono.variable} ${merriweather.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="flex min-h-full flex-col">
+        <a href="#contenu" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:bg-white focus:px-4 focus:py-2">Aller au contenu</a>
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

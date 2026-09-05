@@ -1,22 +1,21 @@
-import React from "react"
-import Nav from "../components/Nav"
-import Hero from "../components/Hero"
-import Stats from "../components/Stats"
-import Articles from "../components/Articles"
-import Newsletter from "../components/Newsletter"
-import SiteFooter from "../components/SiteFooter"
+import Nav from "@/components/Nav"
+import Hero from "@/components/Hero"
+import Articles from "@/components/Articles"
+import Newsletter from "@/components/Newsletter"
+import SiteFooter from "@/components/SiteFooter"
+import { api, type PublicSettings } from "@/lib/api"
 
-export default function Home() {
+export const revalidate = 60
+
+export default async function Home({ searchParams }: { searchParams: Promise<{ login?: string }> }) {
+  const query = await searchParams
+  let settings: PublicSettings = {}
+  try { settings = await api.settings.public() } catch {}
   return (
-    <div className="bg-surface text-on-surface font-body selection:bg-tertiary-fixed">
-      <Nav />
-      <main className="max-w-7xl mx-auto px-6">
-        <Hero />
-        <Stats />
-        <Articles />
-        <Newsletter />
-      </main>
-      <SiteFooter />
+    <div className="min-h-screen bg-[#fbfaf7] text-[#1d2433]">
+      <Nav loginRequired={query.login === "required"} />
+      <main id="contenu" className="mx-auto max-w-6xl px-5"><Hero description={typeof settings.site_description === "string" ? settings.site_description : undefined} /><Articles /><Newsletter /></main>
+      <SiteFooter settings={settings} />
     </div>
   )
 }
