@@ -4,12 +4,15 @@
 import { useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Code2, Eye, Heading2, Image as ImageIcon, Quote, Save, X } from "lucide-react"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { api, type AdminPost, type MediaItem, type PostInput } from "@/lib/api"
 import { blocksToText, textToBlocks } from "@/lib/content"
+import { adminQueryKeys } from "@/lib/queryKeys"
 import Callout from "@/components/Callout"
 
 export default function PostEditor({ post }: { post?: AdminPost }) {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const contentRef = useRef<HTMLTextAreaElement>(null)
   const [title, setTitle] = useState(post?.title || "")
   const [slug, setSlug] = useState(post?.slug || "")
@@ -20,13 +23,25 @@ export default function PostEditor({ post }: { post?: AdminPost }) {
   const [status, setStatus] = useState<"published" | "draft">(post?.status || "draft")
   const [minutes, setMinutes] = useState(typeof post?.minutes === "number" ? post.minutes : Number.parseInt(String(post?.minutes || "5"), 10) || 5)
   const [preview, setPreview] = useState(false)
-  const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState("")
   const [showImagePicker, setShowImagePicker] = useState(false)
   const [media, setMedia] = useState<MediaItem[]>([])
   const [mediaLoading, setMediaLoading] = useState(false)
   const [imageUrl, setImageUrl] = useState("")
   const [imageAlt, setImageAlt] = useState("")
+  const saveMutation = useMutation({
+    mutationFn: (payload: PostInput) =>
+      post ? api.admin.posts.update(post.id, payload) : api.admin.posts.create(payload),
+    onSuccess: async (savedPost) => {
+      queryClient.setQueryData(adminQueryKeys.post(savedPost.id), savedPost)
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: adminQueryKeys.posts }),
+        queryClient.invalidateQueries({ queryKey: adminQueryKeys.stats }),
+      ])
+      router.push("/admin/posts")
+      router.refresh()
+    },
+  })
 
   function insertSnippet(snippet: string) {
     const area = contentRef.current
@@ -51,7 +66,12 @@ export default function PostEditor({ post }: { post?: AdminPost }) {
     if (media.length) return
     setMediaLoading(true)
     try {
-      setMedia(await api.admin.media.list())
+      setMedia(
+        await queryClient.fetchQuery({
+          queryKey: adminQueryKeys.media,
+          queryFn: api.admin.media.list,
+        }),
+      )
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Chargement de la médiathèque impossible.")
     } finally {
@@ -82,17 +102,11 @@ export default function PostEditor({ post }: { post?: AdminPost }) {
       status,
       read_minutes: minutes,
     }
-    setLoading(true)
     setMessage("")
     try {
-      if (post) await api.admin.posts.update(post.id, payload)
-      else await api.admin.posts.create(payload)
-      router.push("/admin/posts")
-      router.refresh()
+      await saveMutation.mutateAsync(payload)
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Enregistrement impossible.")
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -123,8 +137,8 @@ console.log(message)
           <button onClick={() => setPreview((value) => !value)} className="neo-button flex items-center gap-2 bg-white px-4 py-3 font-bold">
             <Eye size={18} />Aperçu
           </button>
-          <button onClick={() => void save()} disabled={loading} className="neo-button flex items-center gap-2 bg-primary px-5 py-3 font-bold text-white disabled:opacity-50">
-            <Save size={18} />{loading ? "Enregistrement…" : "Enregistrer"}
+          <button onClick={() => void save()} disabled={saveMutation.isPending} className="neo-button flex items-center gap-2 bg-primary px-5 py-3 font-bold text-white disabled:opacity-50">
+            <Save size={18} />{saveMutation.isPending ? "Enregistrement…" : "Enregistrer"}
           </button>
         </div>
       </div>

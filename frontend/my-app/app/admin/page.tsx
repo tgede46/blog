@@ -1,9 +1,11 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import Link from "next/link"
 import { Eye, FileText, Shield, UserCog, Users } from "lucide-react"
-import { api, type AdminPost, type AdminStats } from "@/lib/api"
+import { useQuery } from "@tanstack/react-query"
+import { api } from "@/lib/api"
+import { adminQueryKeys } from "@/lib/queryKeys"
 import { formatDateFr } from "@/lib/utils"
 
 type UserFilter = "all" | "admin" | "editor" | "subscriber"
@@ -16,19 +18,19 @@ const filterLabels: Record<UserFilter, string> = {
 }
 
 export default function AdminDashboardPage() {
-  const [stats, setStats] = useState<AdminStats | null>(null)
-  const [posts, setPosts] = useState<AdminPost[]>([])
-  const [error, setError] = useState("")
   const [userFilter, setUserFilter] = useState<UserFilter>("all")
-
-  useEffect(() => {
-    Promise.all([api.admin.stats(), api.admin.posts.list({ page: 1, limit: 5 })])
-      .then(([statsData, postsData]) => {
-        setStats(statsData)
-        setPosts(postsData.posts)
-      })
-      .catch((reason) => setError(reason instanceof Error ? reason.message : "Chargement impossible."))
-  }, [])
+  const statsQuery = useQuery({
+    queryKey: adminQueryKeys.stats,
+    queryFn: api.admin.stats,
+  })
+  const postsQuery = useQuery({
+    queryKey: adminQueryKeys.postList({ page: 1, limit: 5, search: "", status: "" }),
+    queryFn: () => api.admin.posts.list({ page: 1, limit: 5 }),
+  })
+  const stats = statsQuery.data
+  const posts = postsQuery.data?.posts || []
+  const queryError = statsQuery.error || postsQuery.error
+  const error = queryError instanceof Error ? queryError.message : queryError ? "Chargement impossible." : ""
 
   const filteredUsers = useMemo(() => {
     if (!stats) return undefined

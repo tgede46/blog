@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { api, type PublicSettings } from "@/lib/api"
 import SecuritySettings from "@/components/SecuritySettings"
 import { useAuth } from "@/lib/auth"
+import { adminQueryKeys } from "@/lib/queryKeys"
 
 const fields: Array<{ key: keyof PublicSettings; label: string; type?: string }> = [
   { key: "site_name", label: "Nom du site" },
@@ -26,39 +28,48 @@ const fields: Array<{ key: keyof PublicSettings; label: string; type?: string }>
 export default function AdminSettingsPage() {
   const router = useRouter()
   const { user, isLoading: authLoading } = useAuth()
-  const [settings, setSettings] = useState<PublicSettings>({})
+  const queryClient = useQueryClient()
+  const [draft, setDraft] = useState<PublicSettings | null>(null)
   const [message, setMessage] = useState("")
-  const [loading, setLoading] = useState(true)
+  const settingsQuery = useQuery({
+    queryKey: adminQueryKeys.settings,
+    queryFn: api.admin.settings.get,
+    enabled: !authLoading && user?.role === "admin",
+  })
+  const settings = draft ?? settingsQuery.data ?? {}
+  const updateMutation = useMutation({
+    mutationFn: api.admin.settings.update,
+    onSuccess: (updated) => {
+      setDraft(updated)
+      queryClient.setQueryData(adminQueryKeys.settings, updated)
+      setMessage("Réglages enregistrés.")
+    },
+  })
 
   useEffect(() => {
     if (authLoading) return
     if (user?.role !== "admin") {
       router.replace("/admin")
-      return
     }
-    api.admin.settings.get()
-      .then(setSettings)
-      .catch((error) => setMessage(error instanceof Error ? error.message : "Chargement impossible."))
-      .finally(() => setLoading(false))
   }, [authLoading, router, user?.role])
 
   async function save(event: React.FormEvent) {
     event.preventDefault()
-    setLoading(true)
     setMessage("")
     try {
-      setSettings(await api.admin.settings.update(settings))
-      setMessage("Réglages enregistrés.")
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Enregistrement impossible.")
-    } finally {
-      setLoading(false)
+      await updateMutation.mutateAsync(settings)
+    } catch {
+      // L’erreur est affichée depuis l’état de la mutation.
     }
   }
 
   if (authLoading || user?.role !== "admin") {
     return <p className="text-[#596275]">Vérification des autorisations…</p>
   }
+
+  const queryError = settingsQuery.error || updateMutation.error
+  const statusMessage = queryError instanceof Error ? queryError.message : queryError ? "Opération impossible." : message
+  const loading = settingsQuery.isPending || updateMutation.isPending
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -68,10 +79,10 @@ export default function AdminSettingsPage() {
         {fields.map(({ key, label, type }) => {
           const multiline = ["site_description", "author_bio", "hero_description", "about_content", "address", "legal_content"].includes(String(key))
           const value = typeof settings[key] === "string" ? String(settings[key]) : ""
-          const common = { value, onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setSettings((current) => ({ ...current, [key]: event.target.value })), className: "neo-field mt-2 w-full bg-[#f8f7f4] px-4 py-3 outline-none focus:border-violet-500" }
+          const common = { value, onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setDraft((current) => ({ ...(current ?? settingsQuery.data ?? {}), [key]: event.target.value })), className: "neo-field mt-2 w-full bg-[#f8f7f4] px-4 py-3 outline-none focus:border-violet-500" }
           return <label key={key} className="block font-semibold">{label}{multiline ? <textarea {...common} className={`${common.className} min-h-24`} /> : <input {...common} type={type || "text"} />}</label>
         })}
-        <div className="flex flex-wrap items-center gap-5 pt-2"><button disabled={loading} className="neo-button bg-primary px-6 py-3 font-bold text-white disabled:opacity-50">{loading ? "Enregistrement…" : "Enregistrer"}</button><p aria-live="polite" className="text-sm text-[#596275]">{message}</p></div>
+        <div className="flex flex-wrap items-center gap-5 pt-2"><button disabled={loading} className="neo-button bg-primary px-6 py-3 font-bold text-white disabled:opacity-50">{updateMutation.isPending ? "Enregistrement…" : "Enregistrer"}</button><p aria-live="polite" className="text-sm text-[#596275]">{statusMessage}</p></div>
       </form>
       <SecuritySettings />
     </div>

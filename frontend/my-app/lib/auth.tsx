@@ -1,7 +1,9 @@
 "use client"
 
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react"
+import { useQueryClient } from "@tanstack/react-query"
 import { api, type LoginResponse, type MFAMethod, type UserProfile } from "./api"
+import { adminQueryKeys } from "./queryKeys"
 
 type AuthContextType = {
   user: UserProfile | null
@@ -15,6 +17,7 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | null>(null)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const queryClient = useQueryClient()
   const [user, setUser] = useState<UserProfile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -38,8 +41,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const logout = useCallback(async () => {
-    try { await api.auth.logout() } finally { setUser(null) }
-  }, [])
+    try {
+      await api.auth.logout()
+    } finally {
+      setUser(null)
+      queryClient.removeQueries({ queryKey: adminQueryKeys.all })
+    }
+  }, [queryClient])
 
   return <AuthContext.Provider value={{ user, isLoading, login, verifyMfa, logout, isAuthenticated: Boolean(user) }}>{children}</AuthContext.Provider>
 }
