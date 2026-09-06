@@ -2,10 +2,8 @@ services:
   - type: web
     name: blog-api
     runtime: python
-    rootDir: backend
-    buildCommand: pip install --upgrade pip && pip install -r backend/requirements.txt
-    preDeployCommand: alembic upgrade head
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"
+    buildCommand: pip install -r requirements.txt
+    startCommand: bash start.sh
     healthCheckPath: /health/ready
     autoDeploy: true
     envVars:
