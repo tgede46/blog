@@ -49,3 +49,16 @@ services:
         sync: false
       - key: SMTP_USE_TLS
         value: true
+
+  - type: web
+    name: blog-frontend
+    runtime: node
+    rootDir: frontend/my-app
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: API_URL
+        sync: false
