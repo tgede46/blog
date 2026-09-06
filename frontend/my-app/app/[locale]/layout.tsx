@@ -43,7 +43,20 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
     title: { default: metadata.homeTitle, template: metadata.homeTitleTemplate },
     description: metadata.homeDescription,
-    openGraph: { type: "website", locale: localeConfig[locale]?.og || "fr_FR", siteName: "Gedeon Kpara" },
+    keywords: ["Gedeon Kpara", "blog", "développement", "architecture logicielle", "TypeScript", "Node.js", "React", "Next.js", "Python", " FastAPI"],
+    openGraph: {
+      type: "website",
+      locale: localeConfig[locale]?.og || "fr_FR",
+      siteName: "Gedeon Kpara",
+      title: metadata.homeTitle,
+      description: metadata.homeDescription,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: metadata.homeTitle,
+      description: metadata.homeDescription,
+    },
+    robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
     alternates: { types: { "application/rss+xml": "/feed.xml" } },
   }
 }
