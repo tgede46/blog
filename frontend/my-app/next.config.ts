@@ -1,5 +1,8 @@
 import type { NextConfig } from "next";
 import path from "path";
+import createNextIntlPlugin from "next-intl/plugin";
+
+const withNextIntl = createNextIntlPlugin();
 
 const backendUrl = (process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/$/, "");
 
@@ -26,9 +29,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  turbopack: {
-    root: path.resolve(__dirname),
-  },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);
