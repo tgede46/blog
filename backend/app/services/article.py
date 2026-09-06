@@ -9,6 +9,7 @@ from app.database import utc_now
 from app.models.article import Article, ArticleStatus
 from app.models.user import User
 from app.schemas.article import ArticleCreate, ArticleUpdate
+from app.services.newsletter import notify_subscribers_of_article
 
 
 def _content_to_dicts(content: list) -> list[dict]:
@@ -82,11 +83,14 @@ async def create_article(db: AsyncSession, data: ArticleCreate, author: User) ->
     db.add(article)
     await db.commit()
     await db.refresh(article)
+    if article.status == ArticleStatus.published:
+        await notify_subscribers_of_article(db, article)
     return article
 
 
 async def update_article(db: AsyncSession, article: Article, data: ArticleUpdate) -> Article:
     changes = data.model_dump(exclude_unset=True)
+    first_publish = False
     if "content" in changes and data.content is not None:
         changes["content"] = _content_to_dicts(data.content)
     if data.slug:
@@ -95,6 +99,7 @@ async def update_article(db: AsyncSession, article: Article, data: ArticleUpdate
         changes["slug"] = await generate_unique_slug(db, data.title, article.id)
     if changes.get("status") == ArticleStatus.published and article.published_at is None:
         changes["published_at"] = utc_now()
+        first_publish = True
     if changes.get("status") == ArticleStatus.draft:
         changes["published_at"] = None
 
@@ -102,5 +107,7 @@ async def update_article(db: AsyncSession, article: Article, data: ArticleUpdate
         setattr(article, key, value)
     await db.commit()
     await db.refresh(article)
+    if first_publish:
+        await notify_subscribers_of_article(db, article)
     return article
 

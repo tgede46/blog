@@ -33,6 +33,9 @@ export type PostInput = {
 export type AdminPost = ArticleDetail & { id: string; status: "published" | "draft"; updated_at?: string }
 export type AdminStats = {
   total_views: number
+  total_users: number
+  admins: number
+  editors: number
   subscribers: number
   drafts: number
   published: number

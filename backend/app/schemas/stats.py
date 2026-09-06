@@ -13,6 +13,9 @@ class ActivityItem(BaseModel):
 
 class StatsResponse(BaseModel):
     total_views: int
+    total_users: int
+    admins: int
+    editors: int
     subscribers: int
     drafts: int
     published: int
