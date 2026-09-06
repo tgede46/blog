@@ -24,6 +24,7 @@ class HeadingBlock(StrictBlock):
 class CalloutBlock(StrictBlock):
     type: Literal["callout"]
     text: str = Field(min_length=1)
+    variant: Literal["quote", "tip"] = "quote"
 
 
 class CodeBlock(StrictBlock):

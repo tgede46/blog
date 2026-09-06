@@ -7,10 +7,20 @@ export function textToBlocks(value: string): ArticleDetail["content"] {
     .filter(Boolean)
     .map((part) => {
       if (part.startsWith("## ")) return { type: "heading" as const, text: part.slice(3).trim() }
-      if (part.startsWith("> ")) return { type: "callout" as const, text: part.slice(2).trim() }
+      if (part.startsWith(">! ") || part.startsWith("> tip: ")) {
+        const text = part.startsWith("> tip: ") ? part.slice(7).trim() : part.slice(3).trim()
+        return { type: "callout" as const, text, variant: "tip" as const }
+      }
+      if (part.startsWith("> ")) return { type: "callout" as const, text: part.slice(2).trim(), variant: "quote" as const }
       if (part.startsWith("```") && part.endsWith("```")) {
         const lines = part.split("\n")
-        return { type: "code" as const, code: lines.slice(1, -1).join("\n"), filename: "snippet.ts" }
+        const meta = lines[0].slice(3).trim()
+        const filename = meta
+          ? meta.includes(".") || meta.includes("/")
+            ? meta
+            : `snippet.${meta}`
+          : "snippet.ts"
+        return { type: "code" as const, code: lines.slice(1, -1).join("\n"), filename }
       }
       const image = part.match(/^!\[(.*?)\]\((\S+?)(?:\s+"(.*)")?\)$/)
       if (image) {
@@ -29,8 +39,13 @@ export function blocksToText(blocks: ArticleDetail["content"] = []) {
   return blocks
     .map((block) => {
       if (block.type === "heading") return `## ${block.text || ""}`
-      if (block.type === "callout") return `> ${block.text || ""}`
-      if (block.type === "code") return `\`\`\`\n${block.code || ""}\n\`\`\``
+      if (block.type === "callout") {
+        return block.variant === "tip" ? `>! ${block.text || ""}` : `> ${block.text || ""}`
+      }
+      if (block.type === "code") {
+        const fence = block.filename && block.filename !== "snippet.ts" ? block.filename : ""
+        return `\`\`\`${fence}\n${block.code || ""}\n\`\`\``
+      }
       if (block.type === "image") {
         const url = block.url || block.text || ""
         const caption = block.caption ? ` "${block.caption.replaceAll('"', '\\"')}"` : ""

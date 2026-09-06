@@ -12,7 +12,13 @@ def smtp_configured() -> bool:
     return bool(settings.smtp_host and (settings.smtp_from_email or settings.smtp_user))
 
 
-def _send_message(subject: str, body: str, recipient: str, reply_to: str | None = None) -> None:
+def _send_message(
+    subject: str,
+    body: str,
+    recipient: str,
+    reply_to: str | None = None,
+    html_body: str | None = None,
+) -> None:
     message = EmailMessage()
     message["Subject"] = subject
     message["From"] = settings.smtp_from_email or settings.smtp_user
@@ -20,6 +26,8 @@ def _send_message(subject: str, body: str, recipient: str, reply_to: str | None 
     if reply_to:
         message["Reply-To"] = reply_to
     message.set_content(body)
+    if html_body:
+        message.add_alternative(html_body, subtype="html")
 
     with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=15) as smtp:
         if settings.smtp_use_tls:
@@ -29,7 +37,13 @@ def _send_message(subject: str, body: str, recipient: str, reply_to: str | None 
         smtp.send_message(message)
 
 
-async def send_email(subject: str, body: str, recipient: str, reply_to: str | None = None) -> None:
+async def send_email(
+    subject: str,
+    body: str,
+    recipient: str,
+    reply_to: str | None = None,
+    html_body: str | None = None,
+) -> None:
     if not smtp_configured():
         raise RuntimeError("Email is not configured")
-    await asyncio.to_thread(_send_message, subject, body, recipient, reply_to)
+    await asyncio.to_thread(_send_message, subject, body, recipient, reply_to, html_body)

@@ -15,9 +15,11 @@ def test_seed_compatible_content_blocks_are_valid() -> None:
         content=[
             {"type": "paragraph", "text": "Body"},
             {"type": "code", "filename": "main.py", "code": "print('ok')"},
+            {"type": "callout", "text": "Note", "variant": "tip"},
         ],
     )
-    assert len(article.content) == 2
+    assert len(article.content) == 3
+    assert article.content[2].variant == "tip"
 
 
 @pytest.mark.parametrize(

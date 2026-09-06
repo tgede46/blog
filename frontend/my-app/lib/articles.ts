@@ -23,5 +23,6 @@ export type ArticleDetail = ArticleSummary & {
     filename?: string
     url?: string
     alt?: string
+    variant?: "quote" | "tip"
   }>
 }

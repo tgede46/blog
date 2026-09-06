@@ -3,12 +3,18 @@ import { blocksToText, textToBlocks } from "./content"
 
 describe("transformations du contenu d’article", () => {
   it("convertit les paragraphes, titres, encadrés et code", () => {
-    const blocks = textToBlocks("Introduction.\n\n## Une section\n\n> À retenir\n\n```\nconst ok = true\n```")
+    const blocks = textToBlocks("Introduction.\n\n## Une section\n\n> À retenir\n\n```ts\nconst ok = true\n```")
     expect(blocks).toEqual([
       { type: "paragraph", text: "Introduction." },
       { type: "heading", text: "Une section" },
-      { type: "callout", text: "À retenir" },
+      { type: "callout", text: "À retenir", variant: "quote" },
       { type: "code", code: "const ok = true", filename: "snippet.ts" },
+    ])
+  })
+
+  it("convertit les tips bleus", () => {
+    expect(textToBlocks(">! Astuce utile")).toEqual([
+      { type: "callout", text: "Astuce utile", variant: "tip" },
     ])
   })
 
