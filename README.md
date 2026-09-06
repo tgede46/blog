@@ -4,7 +4,7 @@ Application de blog avec un frontend Next.js (`frontend/my-app`) et une API Fast
 
 ## Développement local
 
-Prérequis : Node.js 20+, Python 3.11+ et PostgreSQL 15+.
+Prérequis : Node.js 20+, Python 3.12 et PostgreSQL 15+.
 
 ```bash
 # API et PostgreSQL
@@ -15,7 +15,7 @@ docker compose up --build
 # Frontend (autre terminal)
 cd frontend/my-app
 npm ci
-printf 'NEXT_PUBLIC_API_URL=http://localhost:8000\n' > .env.local
+cp .env.example .env.local
 npm run dev
 ```
 
@@ -26,13 +26,13 @@ alembic upgrade head
 uvicorn app.main:app --reload
 ```
 
-API : `http://localhost:8000` ; frontend : `http://localhost:3000` ; santé : `GET /health`.
+API : `http://localhost:8000` ; frontend : `http://localhost:3000` ; santé : `GET /health/live` et `GET /health/ready`.
 
 ## Variables d'environnement
 
 - API : `DATABASE_URL`, `SECRET_KEY` (aléatoire, au moins 32 caractères en production), `ENVIRONMENT`, `FRONTEND_URL` et `ALLOWED_ORIGINS`.
-- Auth : `ACCESS_TOKEN_EXPIRE_MINUTES` et, si nécessaire, `COOKIE_DOMAIN`/`COOKIE_SAMESITE`.
-- Frontend : `API_URL`, URL HTTPS de l'API sans slash final, utilisée par le rendu serveur et le proxy même origine. `NEXT_PUBLIC_API_URL` reste un fallback de compatibilité.
+- Auth : `ACCESS_TOKEN_EXPIRE_MINUTES`, les délais `MFA_CHALLENGE_EXPIRE_MINUTES`, `EMAIL_OTP_EXPIRE_MINUTES`, `EMAIL_OTP_RESEND_SECONDS` et, si nécessaire, `COOKIE_DOMAIN`/`COOKIE_SAMESITE`.
+- Frontend : `API_URL`, URL HTTPS de l'API sans slash final, utilisée par le rendu serveur et le proxy même origine, et `NEXT_PUBLIC_SITE_URL`, URL canonique HTTPS du site. `NEXT_PUBLIC_API_URL` reste un fallback de compatibilité locale.
 - Médias : `UPLOAD_DIR`; les clés `S3_BUCKET`, `S3_REGION`, `S3_ENDPOINT_URL`, `S3_PUBLIC_BASE_URL` et `AWS_*` sont prévues pour un stockage objet.
 - E-mail : `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM_EMAIL`, `SMTP_TO_EMAIL`, `SMTP_USE_TLS`.
 
@@ -67,6 +67,8 @@ pytest
 cd ../frontend/my-app
 npm ci
 npm run lint
+npm test
+npx tsc --noEmit
 npm run build
 ```
 
@@ -75,13 +77,24 @@ Les dépendances de test sont regroupées dans `backend/requirements-dev.txt`.
 ## Déploiement
 
 1. **Neon** — créer le projet et une branche de production, activer les sauvegardes/rétention adaptées, puis fournir à Render la chaîne de connexion en remplaçant le schéma par `postgresql+asyncpg://`. Tester migrations et restaurations sur une branche Neon.
-2. **Render** — créer le service depuis `render.yaml`, renseigner `DATABASE_URL`, `FRONTEND_URL` et `ALLOWED_ORIGINS`; `SECRET_KEY` est générée par Render. Le pre-deploy exécute Alembic et `/health` sert de health check.
+2. **Render** — créer le service depuis `render.yaml`, renseigner `DATABASE_URL`, `FRONTEND_URL` et `ALLOWED_ORIGINS`; `SECRET_KEY` est générée par Render. Le pre-deploy exécute Alembic et `/health/ready` sert de health check.
 3. **Vercel** — importer le dépôt, choisir `frontend/my-app` comme Root Directory et définir `API_URL=https://<api-render>` ainsi que `NEXT_PUBLIC_SITE_URL=https://<site-vercel>`. Le rewrite `/backend-api/*` garde les cookies d’authentification sur le domaine du frontend. Après le premier déploiement, reporter l’URL Vercel dans `FRONTEND_URL` et `ALLOWED_ORIGINS` sur Render.
 
 Pour revenir en arrière : redéployer le dernier build sain sur Vercel/Render. Ne restaurer Neon que si le schéma ou les données ont été altérés; une restauration crée de préférence une nouvelle branche, validée avant de repointer `DATABASE_URL`.
 
 ### Stockage objet et SMTP
 
-En développement, les uploads sont écrits sur disque. Sur Render, configurer les variables S3 compatibles afin d'utiliser le stockage objet implémenté par l'API ; le dossier `/tmp/uploads` reste uniquement un fallback éphémère.
+En développement, les uploads sont écrits sur disque. En production Render, un stockage S3-compatible est obligatoire pour conserver les médias après un redémarrage. Renseigner `S3_BUCKET`, `S3_REGION`, `S3_ENDPOINT_URL`, `S3_PUBLIC_BASE_URL`, `AWS_ACCESS_KEY_ID` et `AWS_SECRET_ACCESS_KEY`. Le dossier `/tmp/uploads` est uniquement un fallback éphémère.
 
-Configurer les variables SMTP chez Render pour l'envoi des messages de contact, puis tester STARTTLS, l'expéditeur et le destinataire avec le fournisseur retenu. La newsletter stocke les abonnements ; l'envoi de campagnes reste à la charge du fournisseur marketing retenu.
+Configurer `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM_EMAIL`, `SMTP_TO_EMAIL` et `SMTP_USE_TLS` chez Render. Tester le formulaire de contact, l'OTP MFA par e-mail et la notification envoyée aux abonnés lors de la première publication d'un article.
+
+### Checklist avant ouverture au public
+
+- La branche déployée est à jour sur GitHub et la CI est verte.
+- Render répond sur `/health/live` et `/health/ready`.
+- Vercel contient `API_URL` et `NEXT_PUBLIC_SITE_URL`.
+- Render contient les URLs exactes du frontend dans `FRONTEND_URL` et `ALLOWED_ORIGINS`.
+- Un compte administrateur peut se connecter, terminer le MFA et ouvrir toutes les pages admin.
+- Une image importée reste disponible après un redémarrage Render.
+- Les trois e-mails critiques sont reçus : contact, OTP MFA et notification de publication.
+- Le sitemap, le flux RSS et les métadonnées utilisent bien l'URL HTTPS publique.

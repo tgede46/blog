@@ -110,9 +110,15 @@ class Article(Base):
   "filename": "index.ts"
 }
 {
+  "type": "callout",
+  "text": "...",
+  "variant": "quote"  # ou "tip"
+}
+{
   "type": "image",
-  "caption": "...",
-  "text": "url de l'image"
+  "url": "https://cdn.example.com/image.jpg",
+  "alt": "Description accessible",
+  "caption": "..."
 }
 ```
 

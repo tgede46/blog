@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from app.schemas.article import ArticleCreate
+from app.schemas.article import ArticleCreate, ArticleUpdate
 from app.schemas.contact import ContactRequest
 from app.schemas.setting import SettingsOut, SettingsUpdate
 
@@ -16,10 +16,52 @@ def test_seed_compatible_content_blocks_are_valid() -> None:
             {"type": "paragraph", "text": "Body"},
             {"type": "code", "filename": "main.py", "code": "print('ok')"},
             {"type": "callout", "text": "Note", "variant": "tip"},
+            {
+                "type": "image",
+                "url": "https://cdn.example.com/image.png",
+                "alt": "Architecture",
+                "caption": "Vue générale",
+            },
         ],
     )
-    assert len(article.content) == 3
+    assert len(article.content) == 4
     assert article.content[2].variant == "tip"
+    assert article.content[3].url == "https://cdn.example.com/image.png"
+
+
+def test_legacy_image_text_is_migrated_to_url() -> None:
+    article = ArticleCreate(
+        title="A title",
+        excerpt="An excerpt",
+        category="Architecture",
+        tag="Python",
+        content=[{"type": "image", "text": "https://cdn.example.com/legacy.png"}],
+    )
+
+    assert article.content[0].url == "https://cdn.example.com/legacy.png"
+    assert article.content[0].alt == ""
+
+
+def test_complete_article_update_contract() -> None:
+    update = ArticleUpdate(
+        title="Article final",
+        excerpt="Résumé",
+        category="Développement",
+        tag="TypeScript",
+        status="published",
+        read_minutes=7,
+        content=[
+            {"type": "heading", "text": "Introduction"},
+            {"type": "paragraph", "text": "Contenu"},
+            {"type": "callout", "text": "À retenir", "variant": "quote"},
+            {"type": "callout", "text": "Astuce", "variant": "tip"},
+            {"type": "code", "code": "const ready = true", "filename": "article.ts"},
+            {"type": "image", "url": "https://cdn.example.com/final.png", "alt": "Aperçu"},
+        ],
+    )
+
+    assert len(update.content or []) == 6
+    assert update.status == "published"
 
 
 @pytest.mark.parametrize(

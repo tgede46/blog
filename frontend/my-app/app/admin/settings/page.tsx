@@ -1,8 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { api, type PublicSettings } from "@/lib/api"
 import SecuritySettings from "@/components/SecuritySettings"
+import { useAuth } from "@/lib/auth"
 
 const fields: Array<{ key: keyof PublicSettings; label: string; type?: string }> = [
   { key: "site_name", label: "Nom du site" },
@@ -22,16 +24,23 @@ const fields: Array<{ key: keyof PublicSettings; label: string; type?: string }>
 ]
 
 export default function AdminSettingsPage() {
+  const router = useRouter()
+  const { user, isLoading: authLoading } = useAuth()
   const [settings, setSettings] = useState<PublicSettings>({})
   const [message, setMessage] = useState("")
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (authLoading) return
+    if (user?.role !== "admin") {
+      router.replace("/admin")
+      return
+    }
     api.admin.settings.get()
       .then(setSettings)
       .catch((error) => setMessage(error instanceof Error ? error.message : "Chargement impossible."))
       .finally(() => setLoading(false))
-  }, [])
+  }, [authLoading, router, user?.role])
 
   async function save(event: React.FormEvent) {
     event.preventDefault()
@@ -45,6 +54,10 @@ export default function AdminSettingsPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  if (authLoading || user?.role !== "admin") {
+    return <p className="text-[#596275]">Vérification des autorisations…</p>
   }
 
   return (

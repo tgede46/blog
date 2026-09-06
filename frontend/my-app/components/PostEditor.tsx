@@ -1,9 +1,10 @@
 "use client"
+/* eslint-disable @next/next/no-img-element */
 
 import { useRef, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Code2, Eye, Heading2, Quote, Save } from "lucide-react"
-import { api, type AdminPost, type PostInput } from "@/lib/api"
+import { Code2, Eye, Heading2, Image as ImageIcon, Quote, Save, X } from "lucide-react"
+import { api, type AdminPost, type MediaItem, type PostInput } from "@/lib/api"
 import { blocksToText, textToBlocks } from "@/lib/content"
 import Callout from "@/components/Callout"
 
@@ -21,6 +22,11 @@ export default function PostEditor({ post }: { post?: AdminPost }) {
   const [preview, setPreview] = useState(false)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState("")
+  const [showImagePicker, setShowImagePicker] = useState(false)
+  const [media, setMedia] = useState<MediaItem[]>([])
+  const [mediaLoading, setMediaLoading] = useState(false)
+  const [imageUrl, setImageUrl] = useState("")
+  const [imageAlt, setImageAlt] = useState("")
 
   function insertSnippet(snippet: string) {
     const area = contentRef.current
@@ -38,6 +44,27 @@ export default function PostEditor({ post }: { post?: AdminPost }) {
       const cursor = start + block.length
       area.setSelectionRange(cursor, cursor)
     })
+  }
+
+  async function openImagePicker() {
+    setShowImagePicker(true)
+    if (media.length) return
+    setMediaLoading(true)
+    try {
+      setMedia(await api.admin.media.list())
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Chargement de la médiathèque impossible.")
+    } finally {
+      setMediaLoading(false)
+    }
+  }
+
+  function insertImage(url: string, alt = "") {
+    const safeAlt = alt.replaceAll("[", "").replaceAll("]", "")
+    insertSnippet(`![${safeAlt}](${url})`)
+    setImageUrl("")
+    setImageAlt("")
+    setShowImagePicker(false)
   }
 
   async function save() {
@@ -81,7 +108,9 @@ export default function PostEditor({ post }: { post?: AdminPost }) {
 \`\`\`ts
 const message = "Bonjour"
 console.log(message)
-\`\`\``
+\`\`\`
+
+![Description](https://exemple.com/image.jpg)`
 
   return (
     <div className="mx-auto max-w-6xl">
@@ -115,6 +144,11 @@ console.log(message)
                 </pre>
               ) : block.type === "callout" ? (
                 <Callout key={index} variant={block.variant === "tip" ? "tip" : "quote"}>{block.text}</Callout>
+              ) : block.type === "image" ? (
+                <figure key={index}>
+                  <img src={block.url || block.text || ""} alt={block.alt || ""} className="max-h-[560px] w-full rounded-xl border-2 border-on-surface object-cover" />
+                  {block.caption && <figcaption className="mt-2 text-center text-sm text-[#737b8d]">{block.caption}</figcaption>}
+                </figure>
               ) : (
                 <p key={index}>{block.text}</p>
               ),
@@ -140,6 +174,9 @@ console.log(message)
                   <button type="button" onClick={() => insertSnippet(">! Astuce ou note utile")} className="neo-button flex items-center gap-1 bg-ts-blue px-3 py-1.5 text-xs font-bold">
                     Tip
                   </button>
+                  <button type="button" onClick={() => void openImagePicker()} className="neo-button flex items-center gap-1 bg-white px-3 py-1.5 text-xs font-bold">
+                    <ImageIcon size={14} />Image
+                  </button>
                   <button
                     type="button"
                     onClick={() => insertSnippet("```ts\nconst message = \"Bonjour\"\nconsole.log(message)\n```")}
@@ -149,6 +186,39 @@ console.log(message)
                   </button>
                 </div>
               </div>
+              {showImagePicker && (
+                <div className="mb-4 space-y-4 border-2 border-on-surface bg-white p-4 shadow-[3px_3px_0_0_#1d2433]">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="font-bold">Insérer une image</p>
+                    <button type="button" onClick={() => setShowImagePicker(false)} className="p-1" aria-label="Fermer le sélecteur d’image">
+                      <X size={18} />
+                    </button>
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
+                    <input value={imageUrl} onChange={(event) => setImageUrl(event.target.value)} className={`${field} mt-0`} type="url" placeholder="https://…/image.jpg" aria-label="URL de l’image" />
+                    <input value={imageAlt} onChange={(event) => setImageAlt(event.target.value)} className={`${field} mt-0`} placeholder="Description de l’image" aria-label="Texte alternatif de l’image" />
+                    <button type="button" disabled={!imageUrl.trim()} onClick={() => insertImage(imageUrl.trim(), imageAlt.trim())} className="neo-button bg-tertiary-fixed px-4 py-2 font-bold disabled:opacity-50">
+                      Insérer
+                    </button>
+                  </div>
+                  <div>
+                    <p className="mb-2 text-sm font-semibold">Ou choisir dans la médiathèque</p>
+                    {mediaLoading ? (
+                      <p className="text-sm text-[#737b8d]">Chargement…</p>
+                    ) : media.length ? (
+                      <div className="grid max-h-52 grid-cols-3 gap-3 overflow-y-auto sm:grid-cols-5">
+                        {media.map((item) => (
+                          <button key={item.id} type="button" onClick={() => insertImage(item.url, item.alt || item.filename)} className="overflow-hidden border-2 border-transparent hover:border-violet-600" aria-label={`Insérer ${item.filename}`}>
+                            <img src={item.url} alt="" className="aspect-square w-full object-cover" />
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-[#737b8d]">Aucune image importée. Tu peux utiliser une URL ci-dessus.</p>
+                    )}
+                  </div>
+                </div>
+              )}
               <textarea
                 id="article-content"
                 ref={contentRef}
@@ -170,6 +240,7 @@ console.log(message)
               <p><code className="rounded bg-white px-1">## titre</code> → intertitre</p>
               <p><code className="rounded bg-white px-1">&gt; texte</code> → citation</p>
               <p><code className="rounded bg-white px-1">&gt;! texte</code> → tip bleu</p>
+              <p><code className="rounded bg-white px-1">![description](url)</code> → image</p>
               <p>
                 Code :
               </p>

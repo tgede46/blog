@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Annotated, Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, computed_field
+from pydantic import BaseModel, ConfigDict, Field, computed_field, model_validator
 
 from app.models.article import ArticleStatus
 
@@ -35,8 +35,18 @@ class CodeBlock(StrictBlock):
 
 class ImageBlock(StrictBlock):
     type: Literal["image"]
-    text: str = Field(min_length=1)
+    url: str = Field(min_length=1)
+    alt: str = ""
     caption: str | None = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def migrate_legacy_text_url(cls, value: object) -> object:
+        if isinstance(value, dict) and "url" not in value and "text" in value:
+            migrated = dict(value)
+            migrated["url"] = migrated.pop("text")
+            return migrated
+        return value
 
 
 ContentBlock = Annotated[

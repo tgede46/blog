@@ -1,20 +1,23 @@
 "use client"
 
 import { AlertCircle, KeyRound, Loader2, Mail, ShieldCheck, X } from "lucide-react"
-import React, { useState } from "react"
+import React, { useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/auth"
 import { api, type MFAMethod } from "@/lib/api"
+import { safeInternalPath } from "@/lib/navigation"
 
 type ConnectDialogProps = {
   open: boolean
   onClose: () => void
+  redirectTo?: string
 }
 
-export default function ConnectDialog({ open, onClose }: ConnectDialogProps) {
+export default function ConnectDialog({ open, onClose, redirectTo }: ConnectDialogProps) {
   const router = useRouter()
   const { login, verifyMfa } = useAuth()
+  const dialogRef = useRef<HTMLDivElement>(null)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -37,15 +40,44 @@ export default function ConnectDialog({ open, onClose }: ConnectDialogProps) {
       return
     }
 
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    requestAnimationFrame(() => {
+      dialogRef.current?.querySelector<HTMLElement>("input, button")?.focus()
+    })
+
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         closeDialog()
+        return
+      }
+      if (event.key === "Tab") {
+        const focusable = Array.from(
+          dialogRef.current?.querySelectorAll<HTMLElement>(
+            'button:not([disabled]), input:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
+          ) || [],
+        )
+        if (!focusable.length) return
+        const first = focusable[0]
+        const last = focusable[focusable.length - 1]
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault()
+          last.focus()
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault()
+          first.focus()
+        }
       }
     }
 
     window.addEventListener("keydown", onKeyDown)
 
-    return () => window.removeEventListener("keydown", onKeyDown)
+    return () => {
+      window.removeEventListener("keydown", onKeyDown)
+      document.body.style.overflow = previousOverflow
+      previousFocus?.focus()
+    }
   }, [closeDialog, open])
 
   if (!open || typeof document === "undefined") {
@@ -67,7 +99,7 @@ export default function ConnectDialog({ open, onClose }: ConnectDialogProps) {
         if (preferredMethod === "email") await api.auth.sendEmailCode(result.challenge_token)
       } else {
         closeDialog()
-        router.push("/admin")
+        router.push(safeInternalPath(redirectTo))
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Email ou mot de passe incorrect.")
@@ -83,7 +115,7 @@ export default function ConnectDialog({ open, onClose }: ConnectDialogProps) {
     try {
       await verifyMfa(challengeToken, method, code.trim())
       closeDialog()
-      router.push("/admin")
+      router.push(safeInternalPath(redirectTo))
     } catch (err) {
       setError(err instanceof Error ? err.message : "Code incorrect ou expiré.")
     } finally {
@@ -114,6 +146,7 @@ export default function ConnectDialog({ open, onClose }: ConnectDialogProps) {
       onMouseDown={closeDialog}
     >
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="connect-dialog-title"
@@ -137,7 +170,7 @@ export default function ConnectDialog({ open, onClose }: ConnectDialogProps) {
         </h2>
 
         {error && (
-          <div className="mt-4 flex items-center gap-3 rounded-xl border-2 border-red-300 bg-red-50 px-4 py-3 text-red-700">
+          <div className="mt-4 flex items-center gap-3 rounded-xl border-2 border-red-300 bg-red-50 px-4 py-3 text-red-700" role="alert">
             <AlertCircle size={18} className="shrink-0" />
             <p className="text-sm font-medium">{error}</p>
           </div>
@@ -159,7 +192,7 @@ export default function ConnectDialog({ open, onClose }: ConnectDialogProps) {
           </label>
 
           <label className="block space-y-2 text-lg">
-            <span className="block text-[1.1rem] font-normal">Password</span>
+            <span className="block text-[1.1rem] font-normal">Mot de passe</span>
             <input
               id="login-password"
               type="password"

@@ -6,7 +6,7 @@ import { useState } from "react"
 import ConnectDialog from "./ConnectDialog"
 import { useAuth } from "@/lib/auth"
 
-export default function Nav({ loginRequired = false }: { loginRequired?: boolean }) {
+export default function Nav({ loginRequired = false, loginNext }: { loginRequired?: boolean; loginNext?: string }) {
   const [loginOpen, setLoginOpen] = useState(loginRequired)
   const [menuOpen, setMenuOpen] = useState(false)
   const { isAuthenticated, isLoading, logout } = useAuth()
@@ -20,7 +20,7 @@ export default function Nav({ loginRequired = false }: { loginRequired?: boolean
         <button className="neo-button bg-white p-2 md:hidden" onClick={() => setMenuOpen((value) => !value)} aria-label="Afficher le menu" aria-expanded={menuOpen}>{menuOpen ? <X /> : <Menu />}</button>
       </div>
       {menuOpen && <div className="flex flex-col gap-4 border-t-2 border-on-surface bg-surface px-5 py-5 font-bold md:hidden">{links}{isAuthenticated ? <Link href="/admin">Administration</Link> : <button className="text-left" onClick={() => setLoginOpen(true)}>Connexion</button>}</div>}
-      <ConnectDialog open={loginOpen} onClose={() => setLoginOpen(false)} />
+      <ConnectDialog open={loginOpen} onClose={() => setLoginOpen(false)} redirectTo={loginNext} />
     </nav>
   )
 }

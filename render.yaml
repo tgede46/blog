@@ -38,16 +38,16 @@ services:
       - key: AWS_SECRET_ACCESS_KEY
         sync: false
       - key: SMTP_HOST
-        value: smtp.gmail.com
+        sync: false
       - key: SMTP_PORT
         value: 587
       - key: SMTP_USER
-        value: gedeonkpara0@gmail.com
+        sync: false
       - key: SMTP_PASSWORD
         sync: false
       - key: SMTP_FROM_EMAIL
-        value: gedeonkpara0@gmail.com
+        sync: false
       - key: SMTP_TO_EMAIL
-        value: gedeonkpara0@gmail.com
+        sync: false
       - key: SMTP_USE_TLS
         value: true
