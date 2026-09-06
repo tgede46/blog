@@ -151,7 +151,11 @@ console.log(message)
           <div className="mt-8 space-y-5 leading-8">
             {textToBlocks(content).map((block, index) =>
               block.type === "heading" ? (
-                <h3 key={index} className="pt-4 font-heading text-2xl font-bold">{block.text}</h3>
+                block.level === 3 ? (
+                  <h4 key={index} className="pt-2 font-heading text-xl font-bold">{block.text}</h4>
+                ) : (
+                  <h3 key={index} className="pt-4 font-heading text-2xl font-bold">{block.text}</h3>
+                )
               ) : block.type === "code" ? (
                 <pre key={index} className="overflow-x-auto rounded-xl bg-[#1d2433] p-5 text-sm text-white">
                   <code>{block.code}</code>
@@ -163,8 +167,14 @@ console.log(message)
                   <img src={block.url || block.text || ""} alt={block.alt || ""} className="max-h-[560px] w-full rounded-xl border-2 border-on-surface object-cover" />
                   {block.caption && <figcaption className="mt-2 text-center text-sm text-[#737b8d]">{block.caption}</figcaption>}
                 </figure>
+              ) : block.type === "list" ? (
+                <ul key={index} className="list-disc space-y-2 pl-6">
+                  {(block.items || []).map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
               ) : (
-                <p key={index}>{block.text}</p>
+                <p key={index} className="whitespace-pre-line">{block.text}</p>
               ),
             )}
           </div>
@@ -179,8 +189,11 @@ console.log(message)
               <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
                 <label className="font-semibold" htmlFor="article-content">Contenu</label>
                 <div className="flex flex-wrap gap-2">
-                  <button type="button" onClick={() => insertSnippet("## Intertitre")} className="neo-button flex items-center gap-1 bg-white px-3 py-1.5 text-xs font-bold">
+                  <button type="button" onClick={() => insertSnippet("## Intertitre")} className="neo-button flex items-center gap-1 bg-white px-3 py-1.5 text-xs font-bold" aria-label="Insérer un titre">
                     <Heading2 size={14} />Titre
+                  </button>
+                  <button type="button" onClick={() => insertSnippet("### Sous-titre")} className="neo-button flex items-center gap-1 bg-white px-3 py-1.5 text-xs font-bold" aria-label="Insérer un sous-titre">
+                    Sous-titre
                   </button>
                   <button type="button" onClick={() => insertSnippet("> Citation mise en avant")} className="neo-button flex items-center gap-1 bg-white px-3 py-1.5 text-xs font-bold">
                     <Quote size={14} />Citation
@@ -252,6 +265,8 @@ console.log(message)
             <div className="space-y-3 text-sm leading-6 text-[#374151]">
               <p>{content.trim() ? content.trim().split(/\s+/).length : 0} mots.</p>
               <p><code className="rounded bg-white px-1">## titre</code> → intertitre</p>
+              <p><code className="rounded bg-white px-1">### titre</code> → sous-titre</p>
+              <p><code className="rounded bg-white px-1">- item</code> → liste</p>
               <p><code className="rounded bg-white px-1">&gt; texte</code> → citation</p>
               <p><code className="rounded bg-white px-1">&gt;! texte</code> → tip bleu</p>
               <p><code className="rounded bg-white px-1">![description](url)</code> → image</p>

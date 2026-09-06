@@ -22,11 +22,16 @@ def test_seed_compatible_content_blocks_are_valid() -> None:
                 "alt": "Architecture",
                 "caption": "Vue générale",
             },
+            {"type": "heading", "text": "Section", "level": 2},
+            {"type": "heading", "text": "Sous-section", "level": 3},
+            {"type": "list", "items": ["un admin", "des médias"]},
         ],
     )
-    assert len(article.content) == 4
+    assert len(article.content) == 7
     assert article.content[2].variant == "tip"
     assert article.content[3].url == "https://cdn.example.com/image.png"
+    assert article.content[5].level == 3
+    assert article.content[6].items == ["un admin", "des médias"]
 
 
 def test_legacy_image_text_is_migrated_to_url() -> None:

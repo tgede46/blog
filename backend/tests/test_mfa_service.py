@@ -64,6 +64,19 @@ def test_email_otp_is_one_time_and_limits_failed_attempts() -> None:
     assert verify_email_otp(user, code) is False
 
 
+def test_otp_email_uses_brutalist_template() -> None:
+    from app.services.mfa import build_otp_email
+
+    subject, text_body, html_body = build_otp_email("123456")
+    assert subject == "Votre code de connexion"
+    assert "123456" in text_body
+    assert "background:#FDE047" in html_body
+    assert "Gedeon." in html_body
+    assert "123456" in html_body
+    assert "Sécurité" in html_body
+    assert "background:#d0bcff" in html_body
+
+
 def test_recovery_code_can_only_be_used_once() -> None:
     user = make_user()
     secret, _ = create_totp_setup(user)

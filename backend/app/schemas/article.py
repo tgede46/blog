@@ -19,6 +19,12 @@ class ParagraphBlock(StrictBlock):
 class HeadingBlock(StrictBlock):
     type: Literal["heading"]
     text: str = Field(min_length=1)
+    level: Literal[2, 3] = 2
+
+
+class ListBlock(StrictBlock):
+    type: Literal["list"]
+    items: list[str] = Field(min_length=1)
 
 
 class CalloutBlock(StrictBlock):
@@ -50,7 +56,7 @@ class ImageBlock(StrictBlock):
 
 
 ContentBlock = Annotated[
-    ParagraphBlock | HeadingBlock | CalloutBlock | CodeBlock | ImageBlock,
+    ParagraphBlock | HeadingBlock | CalloutBlock | CodeBlock | ImageBlock | ListBlock,
     Field(discriminator="type"),
 ]
 

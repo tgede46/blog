@@ -15,7 +15,23 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from app.config import settings
 
-engine = create_async_engine(settings.database_url, echo=False)
+
+def _engine_kwargs(database_url: str) -> dict:
+    # Neon ferme les connexions idle ; le pool doit les détecter et les remplacer.
+    kwargs: dict = {
+        "echo": False,
+        "pool_pre_ping": True,
+        "pool_recycle": 280,
+        "pool_size": 5,
+        "max_overflow": 5,
+    }
+    # PgBouncer (hôte -pooler) en mode transaction n’aime pas le prepared statement cache d’asyncpg.
+    if "-pooler" in database_url:
+        kwargs["connect_args"] = {"statement_cache_size": 0}
+    return kwargs
+
+
+engine = create_async_engine(settings.database_url, **_engine_kwargs(settings.database_url))
 SessionLocal = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
 

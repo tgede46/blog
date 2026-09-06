@@ -119,17 +119,31 @@ export default async function ArticlePage({ params }: Props) {
           <div className="space-y-7 text-[1.05rem] leading-8 text-[#374151]">
             {source.content.map((block, index) => {
               if (block.type === "paragraph") {
-                return <p key={index}>{block.text}</p>
+                return <p key={index} className="whitespace-pre-line">{block.text}</p>
               }
               if (block.type === "heading") {
+                const Tag = block.level === 3 ? "h3" : "h2"
                 return (
-                  <h2
+                  <Tag
                     key={index}
                     id={headingId(block.text || "", index)}
-                    className="scroll-mt-28 pt-6 font-heading text-3xl font-black tracking-[-0.03em] text-[#1d2433]"
+                    className={
+                      block.level === 3
+                        ? "scroll-mt-28 pt-4 font-heading text-2xl font-bold tracking-[-0.02em] text-[#1d2433]"
+                        : "scroll-mt-28 pt-6 font-heading text-3xl font-black tracking-[-0.03em] text-[#1d2433]"
+                    }
                   >
                     {block.text}
-                  </h2>
+                  </Tag>
+                )
+              }
+              if (block.type === "list") {
+                return (
+                  <ul key={index} className="list-disc space-y-2 pl-6">
+                    {(block.items || []).map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
                 )
               }
               if (block.type === "code") {

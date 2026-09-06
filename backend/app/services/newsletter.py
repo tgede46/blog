@@ -8,7 +8,7 @@ from app.config import settings
 from app.database import utc_now
 from app.models.article import Article
 from app.models.subscriber import Subscriber
-from app.services.email import send_email, smtp_configured
+from app.services.email import build_brutalist_email, send_email, smtp_configured
 
 logger = logging.getLogger(__name__)
 
@@ -67,60 +67,22 @@ def build_publish_email(article: Article) -> tuple[str, str, str]:
         f"— Gedeon Kpara"
     )
 
-    safe_title = html.escape(title)
     safe_excerpt = html.escape(excerpt)
     safe_url = html.escape(url, quote=True)
-
-    html_body = f"""<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{safe_title}</title>
-</head>
-<body style="margin:0;padding:0;background:#fcf9f8;font-family:Arial,Helvetica,sans-serif;color:#212121;">
-  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#fcf9f8;padding:32px 16px;">
-    <tr>
-      <td align="center">
-        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;background:#ffffff;border:3px solid #212121;box-shadow:6px 6px 0 #212121;">
-          <tr>
-            <td style="padding:18px 24px;background:#FDE047;border-bottom:3px solid #212121;">
-              <p style="margin:0;font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;">Gedeon.</p>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:28px 24px 8px;">
-              <p style="margin:0 0 16px;display:inline-block;padding:6px 12px;border:2px solid #212121;background:#DCFCE7;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;">Nouvel article</p>
-              <h1 style="margin:16px 0 0;font-size:28px;line-height:1.15;font-weight:900;">{safe_title}</h1>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:12px 24px 8px;">
-              <p style="margin:0;font-size:16px;line-height:1.7;color:#4b5563;">{safe_excerpt}</p>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:24px;">
+    body_html = f"""
+              <p style="margin:0 0 24px;font-size:16px;line-height:1.7;color:#4b5563;">{safe_excerpt}</p>
               <a href="{safe_url}" style="display:inline-block;padding:14px 22px;border:3px solid #212121;background:#d0bcff;color:#212121;text-decoration:none;font-size:14px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;box-shadow:4px 4px 0 #212121;">Lire l’article</a>
               <p style="margin:18px 0 0;font-size:12px;line-height:1.6;color:#6b7280;word-break:break-all;">
                 Ou ouvre ce lien :<br />
                 <a href="{safe_url}" style="color:#6b38d4;">{safe_url}</a>
               </p>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:16px 24px;border-top:3px solid #212121;background:#E0F2FE;">
-              <p style="margin:0;font-size:13px;font-weight:700;">— Gedeon Kpara</p>
-              <p style="margin:6px 0 0;font-size:12px;color:#4b5563;">Java · TypeScript · Python</p>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>"""
-
+    """
+    html_body = build_brutalist_email(
+        title=title,
+        badge="Nouvel article",
+        badge_bg="#DCFCE7",
+        body_html=body_html,
+    )
     return subject, text_body, html_body
 
 

@@ -16,7 +16,7 @@ export type ArticleDetail = ArticleSummary & {
   author?: string
   updated_at?: string
   content: Array<{
-    type: "paragraph" | "heading" | "code" | "callout" | "image"
+    type: "paragraph" | "heading" | "code" | "callout" | "image" | "list"
     text?: string
     code?: string
     caption?: string
@@ -24,5 +24,7 @@ export type ArticleDetail = ArticleSummary & {
     url?: string
     alt?: string
     variant?: "quote" | "tip"
+    level?: 2 | 3
+    items?: string[]
   }>
 }

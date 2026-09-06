@@ -1,13 +1,11 @@
-import asyncio
 import base64
 import hashlib
 import hmac
+import html
 import json
 import secrets
-import smtplib
 import time
 from datetime import UTC, datetime, timedelta
-from email.message import EmailMessage
 from uuid import UUID
 
 import pyotp
@@ -16,6 +14,7 @@ from jose import JWTError, jwt
 
 from app.config import settings
 from app.models.user import User
+from app.services.email import build_brutalist_email, send_email, smtp_configured
 
 
 def _fernet() -> Fernet:
@@ -164,25 +163,37 @@ def verify_recovery_code(user: User, code: str) -> bool:
     return False
 
 
-def _send_otp_email(recipient: str, code: str) -> None:
-    message = EmailMessage()
-    message["Subject"] = "Votre code de connexion"
-    message["From"] = settings.smtp_from_email or settings.smtp_user
-    message["To"] = recipient
-    message.set_content(
+def build_otp_email(code: str) -> tuple[str, str, str]:
+    minutes = settings.email_otp_expire_minutes
+    subject = "Votre code de connexion"
+    text_body = (
         f"Votre code de connexion est : {code}\n\n"
-        f"Il expire dans {settings.email_otp_expire_minutes} minutes. "
+        f"Il expire dans {minutes} minutes. "
         "Si vous n’avez pas demandé ce code, ignorez cet email."
     )
-    with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=15) as smtp:
-        if settings.smtp_use_tls:
-            smtp.starttls()
-        if settings.smtp_user and settings.smtp_password:
-            smtp.login(settings.smtp_user, settings.smtp_password)
-        smtp.send_message(message)
+    safe_code = html.escape(code)
+    body_html = f"""
+              <p style="margin:0 0 18px;font-size:16px;line-height:1.7;color:#4b5563;">
+                Utilise ce code pour finaliser ta connexion. Il expire dans <strong>{minutes} minutes</strong>.
+              </p>
+              <p style="margin:0;padding:18px 16px;border:3px solid #212121;background:#d0bcff;box-shadow:4px 4px 0 #212121;text-align:center;font-size:32px;line-height:1;font-weight:900;letter-spacing:.28em;font-family:Consolas,Monaco,monospace;">
+                {safe_code}
+              </p>
+              <p style="margin:18px 0 0;font-size:13px;line-height:1.6;color:#6b7280;">
+                Si tu n’as pas demandé ce code, ignore cet email.
+              </p>
+    """
+    html_body = build_brutalist_email(
+        title="Votre code de connexion",
+        badge="Sécurité",
+        badge_bg="#DCFCE7",
+        body_html=body_html,
+    )
+    return subject, text_body, html_body
 
 
 async def send_otp_email(recipient: str, code: str) -> None:
-    if not settings.smtp_host or not (settings.smtp_from_email or settings.smtp_user):
+    if not smtp_configured():
         raise RuntimeError("Email authentication is not configured")
-    await asyncio.to_thread(_send_otp_email, recipient, code)
+    subject, text_body, html_body = build_otp_email(code)
+    await send_email(subject, text_body, recipient, html_body=html_body)

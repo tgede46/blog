@@ -6,9 +6,22 @@ describe("transformations du contenu d’article", () => {
     const blocks = textToBlocks("Introduction.\n\n## Une section\n\n> À retenir\n\n```ts\nconst ok = true\n```")
     expect(blocks).toEqual([
       { type: "paragraph", text: "Introduction." },
-      { type: "heading", text: "Une section" },
+      { type: "heading", text: "Une section", level: 2 },
       { type: "callout", text: "À retenir", variant: "quote" },
       { type: "code", code: "const ok = true", filename: "snippet.ts" },
+    ])
+  })
+
+  it("accepte les sous-titres et les ## sans espace", () => {
+    expect(textToBlocks("### Cookies\n\n##MFA sans espace")).toEqual([
+      { type: "heading", text: "Cookies", level: 3 },
+      { type: "heading", text: "MFA sans espace", level: 2 },
+    ])
+  })
+
+  it("convertit les listes à puces", () => {
+    expect(textToBlocks("- un admin\n- des médias\n- des abonnés")).toEqual([
+      { type: "list", items: ["un admin", "des médias", "des abonnés"] },
     ])
   })
 
@@ -20,7 +33,7 @@ describe("transformations du contenu d’article", () => {
 
   it("permet un aller-retour éditable", () => {
     const source = [
-      { type: "heading" as const, text: "Titre" },
+      { type: "heading" as const, text: "Titre", level: 2 as const },
       { type: "paragraph" as const, text: "Texte." },
     ]
     expect(textToBlocks(blocksToText(source))).toEqual(source)
