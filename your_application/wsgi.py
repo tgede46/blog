@@ -5,7 +5,8 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "backend"))
 os.chdir(os.path.join(os.path.dirname(__file__), "..", "backend"))
 
-subprocess.run([sys.executable, "-m", "alembic", "upgrade", "head"], check=True)
+if os.environ.get("DATABASE_URL"):
+    subprocess.run([sys.executable, "-m", "alembic", "upgrade", "head"], check=False)
 
 from app.main import app  # noqa: E402
 
