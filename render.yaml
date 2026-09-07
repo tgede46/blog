@@ -2,7 +2,7 @@ services:
   - type: web
     name: blog-api
     runtime: python
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install -r requirements.txt && cd backend && alembic upgrade head
     startCommand: bash start.sh
     healthCheckPath: /health/ready
     autoDeploy: true
