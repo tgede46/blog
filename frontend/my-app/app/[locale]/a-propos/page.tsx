@@ -29,7 +29,7 @@ export default async function AboutPage({ params }: Props) {
 
   return (
     <PublicPage>
-      <p className="text-xs font-bold uppercase tracking-[.2em] text-violet-700">{t("title")}</p>
+      <p className="neo-eyebrow">{t("title")}</p>
       <h1 className="mt-4 max-w-3xl font-heading text-5xl font-black leading-tight tracking-[-.04em] sm:text-6xl">{t("heading")}</h1>
       <div className="mt-10 grid gap-10 text-lg leading-8 text-[#596275] md:grid-cols-[1.3fr_.7fr]">
         <div className="space-y-6">
@@ -46,7 +46,7 @@ export default async function AboutPage({ params }: Props) {
         <aside className="neo-card rotate-1 bg-primary-fixed p-7 text-base leading-7 text-[#393658]">
           <h2 className="font-heading text-xl font-bold">{t("workTogether")}</h2>
           <p className="mt-3">{t("workTogetherDesc")}</p>
-          <Link href="/contact" className="mt-5 inline-block font-bold text-violet-700">{t("contactMe")} →</Link>
+          <Link href="/contact" className="neo-link mt-5 inline-block">{t("contactMe")} →</Link>
         </aside>
       </div>
     </PublicPage>

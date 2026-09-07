@@ -5,6 +5,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { FileText, Image as ImageIcon, LayoutDashboard, LogOut, Menu, PenSquare, Settings, X } from "lucide-react"
 import { useAuth } from "@/lib/auth"
+import BrandMark from "@/components/BrandMark"
 
 const links = [
   { href: "/admin", label: "Tableau de bord", icon: LayoutDashboard },
@@ -36,7 +37,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const sidebar = (
     <>
       <div className="flex items-center justify-between border-b-2 border-on-surface p-5">
-        <Link href="/" className="font-heading text-xl font-black">Gedeon<span className="text-violet-600">.</span></Link>
+        <BrandMark className="text-xl" />
         <button className="md:hidden" onClick={() => setOpen(false)} aria-label="Fermer le menu"><X /></button>
       </div>
       <nav className="flex-1 space-y-1 p-4">
@@ -61,7 +62,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b-2 border-on-surface bg-white/95 px-5 backdrop-blur md:px-8">
           <button className="neo-button bg-white p-2 md:hidden" onClick={() => setOpen(true)} aria-label="Ouvrir le menu"><Menu /></button>
           <p className="font-heading font-bold">Administration</p>
-          <Link href="/" className="text-sm font-semibold text-violet-700">Voir le site ↗</Link>
+          <Link href="/" className="text-sm font-semibold text-on-surface">Voir le site ↗</Link>
         </header>
         <main className="p-5 sm:p-8">{children}</main>
       </div>

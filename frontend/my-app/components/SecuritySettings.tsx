@@ -103,13 +103,13 @@ export default function SecuritySettings() {
     }
   }
 
-  const field = "neo-field mt-2 w-full bg-[#f8f7f4] px-4 py-3 outline-none focus:border-violet-500"
+  const field = "neo-field mt-2 w-full bg-[#f8f7f4] px-4 py-3 outline-none focus:border-on-surface"
 
   return (
     <section className="mt-12">
-      <p className="text-sm font-semibold text-violet-700">Sécurité du compte</p>
+      <p className="text-sm font-semibold text-on-surface">Sécurité du compte</p>
       <h2 className="mt-1 font-heading text-3xl font-black">Connexion et double authentification</h2>
-      <p aria-live="polite" className="mt-4 min-h-6 text-sm font-semibold text-violet-700">{message}</p>
+      <p aria-live="polite" className="mt-4 min-h-6 text-sm font-semibold text-on-surface">{message}</p>
 
       <div className="mt-4 grid gap-6 lg:grid-cols-2">
         <div className="neo-card space-y-5 p-6">

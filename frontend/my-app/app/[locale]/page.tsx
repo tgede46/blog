@@ -22,10 +22,10 @@ export default async function HomePage({ params, searchParams }: Props) {
   ])
 
   return (
-    <div className="min-h-screen bg-[#fbfaf7] text-[#1d2433]">
+    <div className="graphic-grid min-h-screen bg-surface text-on-surface">
       <Nav loginRequired={loginRequired} loginNext={loginNext} />
-      <main id="contenu">
-        <Hero title={settings.hero_title} description={settings.hero_description} />
+      <main id="contenu" className="mx-auto max-w-6xl px-5">
+        <Hero title={settings.hero_title} description={settings.hero_description || settings.site_description} />
         <Articles />
         <Newsletter />
       </main>

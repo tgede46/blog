@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { FileText, Image as ImageIcon, LayoutDashboard, LogOut, Menu, PenSquare, Settings, X } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useAuth } from "@/lib/auth"
+import BrandMark from "@/components/BrandMark"
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const t = useTranslations("Admin")
@@ -40,7 +41,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const sidebar = (
     <>
       <div className="flex items-center justify-between border-b-2 border-on-surface p-5">
-        <Link href="/" className="font-heading text-xl font-black">Gedeon<span className="text-violet-600">.</span></Link>
+        <BrandMark className="text-xl" />
         <button className="md:hidden" onClick={() => setOpen(false)} aria-label={tCommon("close")}><X /></button>
       </div>
       <nav className="flex-1 space-y-1 p-4">
@@ -65,7 +66,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b-2 border-on-surface bg-white/95 px-5 backdrop-blur md:px-8">
           <button className="neo-button bg-white p-2 md:hidden" onClick={() => setOpen(true)} aria-label={tCommon("open")}><Menu /></button>
           <p className="font-heading font-bold">{t("dashboard")}</p>
-          <Link href="/" className="text-sm font-semibold text-violet-700">{tCommon("viewSite")} ↗</Link>
+          <Link href="/" className="text-sm font-semibold text-on-surface">{tCommon("viewSite")} ↗</Link>
         </header>
         <main className="p-5 sm:p-8">{children}</main>
       </div>

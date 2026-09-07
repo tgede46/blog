@@ -22,7 +22,7 @@ export default async function ContactPage({ params }: Props) {
 
   return (
     <PublicPage>
-      <p className="text-xs font-bold uppercase tracking-[.2em] text-violet-700">{t("title")}</p>
+      <p className="neo-eyebrow">{t("title")}</p>
       <h1 className="mt-4 max-w-3xl font-heading text-5xl font-black leading-tight tracking-[-.04em] sm:text-6xl">{t("title")}</h1>
       <ContactForm />
     </PublicPage>

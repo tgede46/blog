@@ -18,7 +18,7 @@ export default async function AboutPage() {
 
   return (
     <PublicPage>
-      <p className="text-xs font-bold uppercase tracking-[.2em] text-violet-700">À propos</p>
+      <p className="neo-eyebrow">À propos</p>
       <h1 className="mt-4 max-w-3xl font-heading text-5xl font-black leading-tight tracking-[-.04em] sm:text-6xl">Construire avec clarté, partager sans détour.</h1>
       <div className="mt-10 grid gap-10 text-lg leading-8 text-[#596275] md:grid-cols-[1.3fr_.7fr]">
         <div className="space-y-6">
@@ -35,7 +35,7 @@ export default async function AboutPage() {
         <aside className="neo-card rotate-1 bg-primary-fixed p-7 text-base leading-7 text-[#393658]">
           <h2 className="font-heading text-xl font-bold">Travaillons ensemble</h2>
           <p className="mt-3">Un projet, une idée d’article ou simplement une question ?</p>
-          <Link href="/contact" className="mt-5 inline-block font-bold text-violet-700">Me contacter →</Link>
+          <Link href="/contact" className="neo-link mt-5 inline-block">Me contacter →</Link>
         </aside>
       </div>
     </PublicPage>

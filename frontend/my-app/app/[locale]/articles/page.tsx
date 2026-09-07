@@ -30,7 +30,7 @@ export default function ArticlesPage() {
   return (
     <div className="min-h-screen bg-[#fbfaf7] text-[#1d2433]">
       <main id="contenu" className="mx-auto max-w-6xl px-5 py-14 sm:py-20">
-        <p className="text-xs font-bold uppercase tracking-[.2em] text-violet-700">{t("archives")}</p>
+        <p className="neo-eyebrow">{t("archives")}</p>
         <h1 className="mt-3 font-heading text-5xl font-black sm:text-6xl">{t("title")}</h1>
         <p className="mt-5 text-lg text-[#687184]">{t("description")}</p>
 
@@ -41,8 +41,8 @@ export default function ArticlesPage() {
 
         <div className="mt-8 grid gap-6 md:grid-cols-2">
           {posts.map((post) => (
-            <Link key={post.id} href={`/articles/${post.slug}`} className="neo-card p-6 hover:border-violet-600">
-              <p className="text-sm font-bold text-violet-700">{post.category}</p>
+            <Link key={post.id} href={`/articles/${post.slug}`} className="neo-card p-6 hover:border-on-surface">
+              <p className="text-sm font-bold text-on-surface">{post.category}</p>
               <h2 className="mt-2 font-heading text-2xl font-black">{post.title}</h2>
               <p className="mt-3 text-[#596275]">{post.excerpt}</p>
             </Link>

@@ -110,7 +110,7 @@ export default function PostEditor({ post }: { post?: AdminPost }) {
     }
   }
 
-  const field = "neo-field mt-2 w-full bg-[#f8f7f4] px-4 py-3 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100"
+  const field = "neo-field mt-2 w-full bg-[#f8f7f4] px-4 py-3 outline-none focus:border-on-surface focus:ring-2 focus:ring-tertiary-fixed/50"
   const contentPlaceholder = `Paragraphes séparés par une ligne vide.
 
 ## Intertitre
@@ -130,7 +130,7 @@ console.log(message)
     <div className="mx-auto max-w-6xl">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-sm font-semibold text-violet-700">{post ? "Édition" : "Nouvelle publication"}</p>
+          <p className="text-sm font-semibold text-on-surface">{post ? "Édition" : "Nouvelle publication"}</p>
           <h1 className="mt-1 font-heading text-4xl font-black">{post ? post.title : "Nouvel article"}</h1>
         </div>
         <div className="flex gap-3">
@@ -145,7 +145,7 @@ console.log(message)
       {message && <p className="mt-5 rounded-xl bg-red-50 p-4 text-red-700" role="alert">{message}</p>}
       {preview ? (
         <article className="neo-card mt-8 p-6 sm:p-10">
-          <p className="text-sm font-bold uppercase tracking-wider text-violet-700">{category || "Général"} · {tag || "Développement"}</p>
+          <p className="text-sm font-bold uppercase tracking-wider text-on-surface">{category || "Général"} · {tag || "Développement"}</p>
           <h2 className="mt-4 font-heading text-4xl font-black">{title || "Titre de l’article"}</h2>
           <p className="mt-4 text-lg text-[#596275]">{excerpt || "Le résumé apparaîtra ici."}</p>
           <div className="mt-8 space-y-5 leading-8">
@@ -235,7 +235,7 @@ console.log(message)
                     ) : media.length ? (
                       <div className="grid max-h-52 grid-cols-3 gap-3 overflow-y-auto sm:grid-cols-5">
                         {media.map((item) => (
-                          <button key={item.id} type="button" onClick={() => insertImage(item.url, item.alt || item.filename)} className="overflow-hidden border-2 border-transparent hover:border-violet-600" aria-label={`Insérer ${item.filename}`}>
+                          <button key={item.id} type="button" onClick={() => insertImage(item.url, item.alt || item.filename)} className="overflow-hidden border-2 border-transparent hover:border-on-surface" aria-label={`Insérer ${item.filename}`}>
                             <img src={item.url} alt="" className="aspect-square w-full object-cover" />
                           </button>
                         ))}

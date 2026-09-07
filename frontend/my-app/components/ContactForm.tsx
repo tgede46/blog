@@ -29,7 +29,7 @@ export default function ContactForm() {
     }
   }
 
-  const fieldClass = "neo-field mt-2 w-full px-4 py-3 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100"
+  const fieldClass = "neo-field mt-2 w-full px-4 py-3 outline-none focus:border-on-surface focus:ring-2 focus:ring-tertiary-fixed/50"
 
   return (
     <form onSubmit={submit} className="neo-card mt-10 space-y-5 p-6 sm:p-9">
