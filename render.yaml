@@ -61,4 +61,6 @@ services:
       - key: NODE_VERSION
         value: 20
       - key: API_URL
-        sync: false
+        value: https://blog-28ci.onrender.com
+      - key: NEXT_PUBLIC_API_URL
+        value: https://blog-28ci.onrender.com

@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next"
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://blog-28ci.onrender.com"
-const API_URL = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+const API_URL = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || "https://blog-28ci.onrender.com"
 
 type ArticleSummary = {
   slug: string
