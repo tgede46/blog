@@ -16,9 +16,9 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: FRONTEND_URL
-        sync: false
+        value: https://tgede46-blog-qmrj-one.vercel.app
       - key: ALLOWED_ORIGINS
-        sync: false
+        value: https://tgede46-blog-qmrj-one.vercel.app
       - key: UPLOAD_DIR
         value: /tmp/uploads
       - key: COOKIE_SAMESITE
@@ -64,3 +64,5 @@ services:
         value: https://blog-28ci.onrender.com
       - key: NEXT_PUBLIC_API_URL
         value: https://blog-28ci.onrender.com
+      - key: NEXT_PUBLIC_SITE_URL
+        value: https://tgede46-blog-qmrj-one.vercel.app
