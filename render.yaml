@@ -64,5 +64,3 @@ services:
         value: https://blog-28ci.onrender.com
       - key: NEXT_PUBLIC_API_URL
         value: https://blog-28ci.onrender.com
-      - key: NEXT_PUBLIC_SITE_URL
-        value: https://tgede46-blog-qmrj-one.vercel.app

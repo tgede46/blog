@@ -2,7 +2,7 @@ import type { ArticleDetail, ArticleSummary } from "./articles"
 
 export const API_BASE_URL = (
   typeof window === "undefined"
-    ? process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+    ? process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || "https://blog-28ci.onrender.com"
     : "/backend-api"
 ).replace(/\/$/, "")
 
