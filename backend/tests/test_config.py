@@ -17,7 +17,12 @@ def test_development_cors_supports_local_frontend() -> None:
 
 def test_production_requires_safe_secret_and_origins() -> None:
     with pytest.raises(ValidationError):
-        Settings(_env_file=None, environment="production")
+        Settings(
+            _env_file=None,
+            environment="production",
+            secret_key="too-short",
+            allowed_origins="",
+        )
 
 
 def test_production_cookie_is_cross_site_compatible() -> None:
