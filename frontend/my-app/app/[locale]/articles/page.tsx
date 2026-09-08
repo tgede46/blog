@@ -34,9 +34,13 @@ export default function ArticlesPage() {
         <h1 className="mt-3 font-heading text-5xl font-black sm:text-6xl">{t("title")}</h1>
         <p className="mt-5 text-lg text-[#687184]">{t("description")}</p>
 
-        <form className="neo-card mt-10 flex flex-col gap-3 p-4 sm:flex-row">
-          <input name="search" className="neo-field min-w-0 flex-1 px-5 py-3 outline-none" aria-label={tCommon("search")} placeholder={tCommon("searchPlaceholder")} />
-          <button className="neo-button bg-on-surface px-6 py-3 font-bold text-surface">{tCommon("search")}</button>
+        <form className="neo-card mt-10 flex flex-col gap-3 p-4 sm:flex-row" onSubmit={(e) => {
+          e.preventDefault()
+          const form = new FormData(e.currentTarget)
+          setQuery((q) => ({ ...q, search: (form.get("search") as string) || "", page: 1 }))
+        }}>
+          <input name="search" defaultValue={query.search} className="neo-field min-w-0 flex-1 px-5 py-3 outline-none" aria-label={tCommon("search")} placeholder={tCommon("searchPlaceholder")} />
+          <button type="submit" className="neo-button bg-on-surface px-6 py-3 font-bold text-surface">{tCommon("search")}</button>
         </form>
 
         <div className="mt-8 grid gap-6 md:grid-cols-2">

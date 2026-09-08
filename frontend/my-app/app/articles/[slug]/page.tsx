@@ -97,7 +97,7 @@ export default async function ArticlePage({ params }: Props) {
         </header>
 
         {headings.length > 0 && (
-          <nav className="mt-10 border-l-2 border-[#1d2433]/15 pl-4 sm:hidden" aria-label="Sommaire">
+          <nav className="mt-10 border-l-2 border-[#1d2433]/15 pl-4 hidden sm:block" aria-label="Sommaire">
             <p className="mb-3 text-xs font-bold uppercase tracking-wider text-[#6b7280]">Sommaire</p>
             <div className="space-y-2 text-sm font-semibold">
               {headings.map(({ block, index }) => (
