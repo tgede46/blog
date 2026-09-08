@@ -4,6 +4,9 @@
     "@neon/env": "^1.2.1"
   },
   "scripts": {
+    "dev": "cd frontend/my-app && npm run dev",
+    "build": "cd frontend/my-app && npm install && npm run build",
+    "start": "cd frontend/my-app && npm start",
     "vercel-build": "cd frontend/my-app && npm install && npm run build"
   }
 }
