@@ -16,9 +16,9 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: FRONTEND_URL
-        value: https://tgede46-blog-qmrj-one.vercel.app
+        value: https://blog-1-wubh.onrender.com
       - key: ALLOWED_ORIGINS
-        value: https://tgede46-blog-qmrj-one.vercel.app
+        value: https://blog-1-wubh.onrender.com
       - key: UPLOAD_DIR
         value: /tmp/uploads
       - key: COOKIE_SAMESITE

@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin/
 Disallow: /api/
 
-Sitemap: https://blog-28ci.onrender.com/sitemap.xml
+Sitemap: https://blog-1-wubh.onrender.com/sitemap.xml
