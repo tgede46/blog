@@ -105,9 +105,9 @@ async def send_email_code(payload: MFAChallengeRequest, db: AsyncSession = Depen
     try:
         await send_otp_email(user.email, code)
         await db.commit()
-    except RuntimeError as exc:
+    except Exception as exc:
         await db.rollback()
-        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc)) from exc
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=f"Failed to send email: {exc}") from exc
     return MessageResponse(message="Code sent")
 
 
@@ -167,9 +167,9 @@ async def setup_email_mfa(user: User = Depends(get_current_user), db: AsyncSessi
     try:
         await send_otp_email(user.email, code)
         await db.commit()
-    except RuntimeError as exc:
+    except Exception as exc:
         await db.rollback()
-        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc)) from exc
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=f"Failed to send email: {exc}") from exc
     return MessageResponse(message="Code sent")
 
 
