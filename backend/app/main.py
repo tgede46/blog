@@ -1,4 +1,5 @@
 import logging
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, Request
@@ -18,7 +19,20 @@ from app.routers.admin import settings as admin_settings
 
 configure_logging()
 logger = logging.getLogger(__name__)
-app = FastAPI(title="Blog API", version="1.0.0")
+
+
+@asynccontextmanager
+async def lifespan(application: FastAPI):
+    try:
+        async with SessionLocal() as db:
+            await db.execute(text("SELECT 1"))
+        logger.info("database_connection_ok")
+    except Exception:
+        logger.exception("database_startup_check_failed")
+    yield
+
+
+app = FastAPI(title="Blog API", version="1.0.0", lifespan=lifespan)
 Path(settings.upload_dir).mkdir(parents=True, exist_ok=True)
 
 app.add_middleware(RateLimitMiddleware)
